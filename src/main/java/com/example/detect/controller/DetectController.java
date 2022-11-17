@@ -53,7 +53,7 @@ public class DetectController {
     /**
      * 继续检测：
      *      点击继续检测，弹出检测记录填写，填写后，点击确认提交
-     *          点击后检测状态为检测中
+     *         点击后检测状态为检测中
      * @param record
      * @return
      */
@@ -136,7 +136,7 @@ public class DetectController {
     @PostMapping("/getRequestInfoByStatus")
     public String getRequestInfoByStatus(Integer dataStatus) {
         List<DetectRequest> detectRequests = requestService.selectDetectRequestByStatus(dataStatus);
-        if (detectRequests != null) {
+        if (detectRequests.size() != 0) {
             return JSON.toJSONString(detectRequests);
         } else {
             return "没有返回数据！";

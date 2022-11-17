@@ -4,8 +4,10 @@ public class CheckInSheet {
 
     private Integer id;
     private Integer userId;
-    private String date;
-    private String location;
+    private String checkInDate;
+    private String checkInLocation;
+    private String checkOutDate;
+    private String checkOutLocation;
 
     public Integer getId() {
         return id;
@@ -23,19 +25,35 @@ public class CheckInSheet {
         this.userId = userId;
     }
 
-    public String getDate() {
-        return date;
+    public String getCheckInDate() {
+        return checkInDate;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setCheckInDate(String checkInDate) {
+        this.checkInDate = checkInDate;
     }
 
-    public String getLocation() {
-        return location;
+    public String getCheckInLocation() {
+        return checkInLocation;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public void setCheckInLocation(String checkInLocation) {
+        this.checkInLocation = checkInLocation;
+    }
+
+    public String getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(String checkOutDate) {
+        this.checkOutDate = checkOutDate;
+    }
+
+    public String getCheckOutLocation() {
+        return checkOutLocation;
+    }
+
+    public void setCheckOutLocation(String checkOutLocation) {
+        this.checkOutLocation = checkOutLocation;
     }
 }

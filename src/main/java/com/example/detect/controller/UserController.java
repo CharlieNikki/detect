@@ -18,6 +18,10 @@ public class UserController {
     /**
      * 注册
      * @param user
+     *      username
+     *      password
+     *      companyName
+     *      phone
      * @return
      */
     @PostMapping("/register")
@@ -37,10 +41,11 @@ public class UserController {
      * @return
      */
     @PostMapping("/login")
+    @ResponseBody
     public String login(String username, String password) {
         User user = userService.selectUserInfo(username, password);
         if (user != null) {
-            return "登陆成功！";
+            return JSON.toJSONString(user);
         } else {
             return "用户名或密码不正确";
         }

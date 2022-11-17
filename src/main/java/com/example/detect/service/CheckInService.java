@@ -9,4 +9,6 @@ public interface CheckInService {
     CheckInSheet personExists(Integer userId);
 
     int updateCheckIn(CheckInSheet sheet);
+
+    int updateCheckOut(CheckInSheet sheet);
 }

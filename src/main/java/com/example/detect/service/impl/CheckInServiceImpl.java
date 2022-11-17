@@ -27,4 +27,9 @@ public class CheckInServiceImpl implements CheckInService {
     public int updateCheckIn(CheckInSheet sheet) {
         return mapper.updateCheckIn(sheet);
     }
+
+    @Override
+    public int updateCheckOut(CheckInSheet sheet) {
+        return mapper.updateCheckOut(sheet);
+    }
 }
