@@ -1,5 +1,7 @@
 package com.example.detect.entity;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.sql.Blob;
 
 public class DetectRequest {
@@ -74,15 +76,6 @@ public class DetectRequest {
     public void setRemark(String remark) {
         this.remark = remark;
     }
-
-    public Blob getImage() {
-        return image;
-    }
-
-    public void setImage(Blob image) {
-        this.image = image;
-    }
-
     public Integer getDataStatus() {
         return dataStatus;
     }
@@ -101,7 +94,16 @@ public class DetectRequest {
 
     private String location;
     private String remark;
-    private Blob image;
+
+    public MultipartFile getImage() {
+        return image;
+    }
+
+    public void setImage(MultipartFile image) {
+        this.image = image;
+    }
+
+    private MultipartFile image;
     private Integer dataStatus;
     private String detectRequestDate;
 }

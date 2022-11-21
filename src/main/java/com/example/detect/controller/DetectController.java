@@ -6,12 +6,20 @@ import com.example.detect.entity.DetectRequest;
 import com.example.detect.service.DetectRecordService;
 import com.example.detect.service.DetectRequestService;
 import com.example.detect.utils.DateUtil;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @RestController
@@ -27,22 +35,38 @@ public class DetectController {
      * 现场检测：
      *      点击现场检测，弹出检测记录填写，填写后，点击确认提交
      *          点击后检测状态由待检测变为检测中
-     * @param record
      *      需要的参数：
      *          1. Integer projectId   --->   委托单号
      *          2. String description --->   检测描述
      *          3. Integer detectPersonId  --->   检测人员Id
+     *          4. Object image  --->    图片附件
      * @return
      */
     @Transactional
     @PostMapping("/addRecord")
-    public String addRecord(DetectRecord record) {
+    public String addRecord(@Param("detectPersonId") Integer detectPersonId,
+                            @Param("file")MultipartFile file,
+                            @Param("description") String description,
+                            @Param("projectId")Integer projectId) throws IOException {
 
         String date = DateUtil.dateFormat();
+        BASE64Encoder encoder = new BASE64Encoder();
+        String image = encoder.encode(file.getBytes());
+
+        DetectRecord record = new DetectRecord();
         record.setDate(date);
+        record.setDescription(description);
+        record.setProjectId(projectId);
+        record.setImage(image);
+        record.setDetectPersonId(detectPersonId);
+        System.out.println(record.toString());
+        // 添加检测记录
         int addResult = service.addDetectRecord(record);
-        int updateResult = requestService.updateStatusToDetecting(record.getProjectId());
-        int updateDate = requestService.updateDetectDateByProjectId(record.getProjectId(), date);
+        // 更新检测状态
+        int updateResult = requestService.updateStatusToDetecting(projectId);
+        // 更新最后检测日期
+        int updateDate = requestService.updateDetectDateByProjectId(projectId, date);
+
         if (addResult == 1 && updateResult == 1 && updateDate == 1) {
             return "添加成功！状态更改成功！最近检测时间更改成功！";
         } else {
@@ -54,12 +78,22 @@ public class DetectController {
      * 继续检测：
      *      点击继续检测，弹出检测记录填写，填写后，点击确认提交
      *         点击后检测状态为检测中
-     * @param record
      * @return
      */
     @PostMapping("/continueDetect")
-    public String continueDetect(DetectRecord record) {
+    public String continueDetect(@Param("detectPersonId") Integer detectPersonId,
+                                 @Param("file")MultipartFile file,
+                                 @Param("description") String description,
+                                 @Param("projectId")Integer projectId) throws IOException {
+        BASE64Encoder encoder = new BASE64Encoder();
+        String image = encoder.encode(file.getBytes());
+
+        DetectRecord record = new DetectRecord();
         record.setDate(DateUtil.dateFormat());
+        record.setDetectPersonId(detectPersonId);
+        record.setDescription(description);
+        record.setProjectId(projectId);
+        record.setImage(image);
         int i = service.addDetectRecord(record);
         if (i == 1) {
             return "添加成功！";
@@ -112,7 +146,6 @@ public class DetectController {
      * 获取信息：
      *      检测人员id  ---->  detectPersonId
      *      委托单号 ---> projectId
-     *
      *      该委托单号projectId的所有检测记录records
      */
     @PostMapping("/getRecordByProjectId")

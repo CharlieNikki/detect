@@ -1,5 +1,7 @@
 package com.example.detect.entity;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.sql.Blob;
 
 public class DetectRecord {
@@ -9,7 +11,28 @@ public class DetectRecord {
     private String date;
     private Integer projectId;
     private Integer detectPersonId;
-    private Blob image;
+
+    @Override
+    public String toString() {
+        return "DetectRecord{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", date='" + date + '\'' +
+                ", projectId=" + projectId +
+                ", detectPersonId=" + detectPersonId +
+                ", image=" + image +
+                '}';
+    }
+
+    public Object getImage() {
+        return image;
+    }
+
+    public void setImage(Object image) {
+        this.image = image;
+    }
+
+    private Object image;
 
     public Integer getId() {
         return id;
@@ -49,13 +72,5 @@ public class DetectRecord {
 
     public void setDetectPersonId(Integer detectPersonId) {
         this.detectPersonId = detectPersonId;
-    }
-
-    public Blob getImage() {
-        return image;
-    }
-
-    public void setImage(Blob image) {
-        this.image = image;
     }
 }
