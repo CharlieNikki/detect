@@ -2,7 +2,7 @@ package com.example.detect.controller;
 
 import com.example.detect.entity.Test;
 import com.example.detect.service.TestService;
-import org.apache.ibatis.annotations.Param;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,11 +14,10 @@ import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
 
 @RestController
+@Api(tags = "测试接口")
 public class TestController {
 
     @Resource
@@ -38,11 +37,11 @@ public class TestController {
         return test.toString();
     }
 
-    @PostMapping(value = "/queryById", produces = "image/jpeg")
+    @GetMapping(value = "/queryById", produces = "image/jpeg")
     public String queryById(HttpServletResponse response, Integer id) throws IOException {
         Test test = service.selectTestById(id);
         byte[] bytes = (byte[]) test.getImage();
-        String data = new String(bytes, "UTF-8");
+        String data = new String(bytes, StandardCharsets.UTF_8);
         BASE64Decoder decoder = new BASE64Decoder();
         byte[] b = decoder.decodeBuffer(data);
         for (int i = 0; i < b.length; ++i) {
@@ -57,19 +56,5 @@ public class TestController {
         out.close();
 
         return test.toString();
-    }
-
-    @GetMapping("/getImage")
-    public Map<String,Object> getImage(Integer id) {
-
-        Test test = service.selectTestById(id);
-        byte[] bytes = (byte[]) test.getImage();
-        HashMap<String,Object> map = new HashMap<>();
-        map.put("data", 1111);
-
-        BASE64Encoder encoder = new BASE64Encoder();
-        String data = encoder.encode(bytes);
-        map.put("image", data);
-        return map;
     }
 }

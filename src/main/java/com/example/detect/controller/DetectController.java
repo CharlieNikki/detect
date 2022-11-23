@@ -116,8 +116,10 @@ public class DetectController {
      * @param id
      * @return
      */
+    @ApiOperation("完成检测接口")
+    @ApiImplicitParam(name = "id", value = "委托单号")
     @PostMapping("/completeDetect")
-    public String completeDetect(Integer id) {
+    public String completeDetect(@Param("id") Integer id) {
         String date = DateUtil.dateFormat();
         int completeResult = requestService.updateStatusToComplete(id);
         int updateResult = requestService.updateDetectDateByProjectId(id, date);
@@ -136,8 +138,10 @@ public class DetectController {
      * @param id
      * @return
      */
+    @ApiOperation("获取检测状态接口")
+    @ApiImplicitParam(name = "id", value = "委托单号")
     @PostMapping("/getDataStatus")
-    public String getDataStatus(Integer id) {
+    public String getDataStatus(@Param("id") Integer id) {
         int i = requestService.selectDataStatusById(id);
         if (i == 1) {
             return "检测状态为：待检测";
@@ -155,6 +159,7 @@ public class DetectController {
      *      该委托单号projectId的所有检测记录records
      */
     @PostMapping("/getRecordByProjectId")
+    @ApiOperation("获取检测记录接口")
     @ResponseBody
     public String getRecordByProjectId(Integer id) {
         List<DetectRecord> detectRecords = service.selectRecordByProjectId(id);
@@ -173,7 +178,9 @@ public class DetectController {
      *      返回工程信息
      */
     @PostMapping("/getRequestInfoByStatus")
-    public String getRequestInfoByStatus(Integer dataStatus) {
+    @ApiOperation("获取工程信息接口")
+    @ApiImplicitParam(name = "dataStatus", value = "检测状态")
+    public String getRequestInfoByStatus(@Param("dataStatus") Integer dataStatus) {
         List<DetectRequest> detectRequests = requestService.selectDetectRequestByStatus(dataStatus);
         if (detectRequests.size() != 0) {
             return JSON.toJSONString(detectRequests);
@@ -181,10 +188,4 @@ public class DetectController {
             return "没有返回数据！";
         }
     }
-
-    /**
-     * 功能描述
-     *      对已完成的检测数据，可查看检测详情
-     */
-
 }

@@ -14,6 +14,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @EnableSwagger2
 public class SwaggerConfig {
 
+    // 配置了Docket的bean实例
     @Bean
     public Docket createRestApi() {
 
@@ -23,12 +24,11 @@ public class SwaggerConfig {
                 .apis(RequestHandlerSelectors.basePackage("com.example.detect.controller"))
                 .paths(PathSelectors.any())
                 .build().apiInfo(new ApiInfoBuilder()
-                        .title("SpringBoot整合Swagger")
-                        .description("详细信息...")
-                        .version("9.0")
-                        .contact(new Contact("啊啊啊", "blog.csdn.net", "charlienikki999@gmail.com"))
+                        .title("检测接口文档")
+                        .description("用户和检测方接口")
+                        .version("1.0")
+                        .contact(new Contact("杨镇玮", "blog.csdn.net", "charlienikki999@gmail.com"))
                         .license("The Apache License")
-                        .licenseUrl("https://www.baidu.com")
                         .build());
     }
 }
