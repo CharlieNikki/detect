@@ -12,7 +12,7 @@
 
     <select id="getInfoById" resultType="com.example.detect.entity.User">
         select
-            username, company_name as companyName, phone
+            username, company_name as companyName, phone, password
         from
             user
         where

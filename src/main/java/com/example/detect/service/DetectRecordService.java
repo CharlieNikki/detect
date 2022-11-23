@@ -9,4 +9,6 @@ public interface DetectRecordService {
     int addDetectRecord(DetectRecord record);
 
     List<DetectRecord> selectRecordByProjectId(Integer id);
+
+    Object getImageByRecordId(Integer id);
 }

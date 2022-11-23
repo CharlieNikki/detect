@@ -12,7 +12,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:8080/demo
     username: root
-    password: 123456
+    password: 123123
   servlet:
     multipart:
       max-file-size: 200MB

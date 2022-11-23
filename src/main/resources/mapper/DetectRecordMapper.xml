@@ -19,4 +19,13 @@
         where
             project_id = #{id}
     </select>
+
+    <select id="getImageByRecordId">
+        select
+            image
+        from
+            detect_records
+        where
+            id = #{id}
+    </select>
 </mapper>

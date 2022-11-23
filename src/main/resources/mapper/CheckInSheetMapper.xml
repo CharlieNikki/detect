@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.detect.mapper.CheckInSheetMapper">
+
+    <update id="updateCheckIn" parameterType="com.example.detect.entity.CheckInSheet">
+        update
+            check_in_sheet
+        set
+            check_in_date = #{checkInDate}, longitude = #{longitude}, latitude = #{latitude}
+        where
+            user_id = #{userId}
+    </update>
+
+    <insert id="insertSheet" parameterType="com.example.detect.entity.CheckInSheet">
+        insert into
+            check_in_sheet(user_id, check_in_date, longitude, latitude)
+        values
+            (#{userId}, #{checkInDate}, #{longitude}, #{latitude})
+    </insert>
+
+    <select id="personExists" resultType="com.example.detect.entity.CheckInSheet">
+        select
+            *
+        from
+            check_in_sheet
+        where
+            user_id = #{userId}
+    </select>
+
+</mapper>

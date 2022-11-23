@@ -3,8 +3,6 @@ package com.example.detect.mapper;
 import com.example.detect.entity.User;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface UserMapper {

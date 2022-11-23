@@ -1,21 +1,15 @@
 package com.example.detect.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
 public class Test {
 
     private Object image;
-
-    public Object getImage() {
-        return image;
-    }
-
-    @Override
-    public String toString() {
-        return "Test{" +
-                "image=" + image +
-                '}';
-    }
-
-    public void setImage(Object image) {
-        this.image = image;
-    }
 }
