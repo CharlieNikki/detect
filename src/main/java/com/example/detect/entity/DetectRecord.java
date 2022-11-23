@@ -10,19 +10,16 @@ public class DetectRecord {
     private String description;
     private String date;
     private Integer projectId;
-    private Integer detectPersonId;
 
-    @Override
-    public String toString() {
-        return "DetectRecord{" +
-                "id=" + id +
-                ", description='" + description + '\'' +
-                ", date='" + date + '\'' +
-                ", projectId=" + projectId +
-                ", detectPersonId=" + detectPersonId +
-                ", image=" + image +
-                '}';
+    public String getDetectPersonName() {
+        return detectPersonName;
     }
+
+    public void setDetectPersonName(String detectPersonName) {
+        this.detectPersonName = detectPersonName;
+    }
+
+    private String detectPersonName;
 
     public Object getImage() {
         return image;
@@ -64,13 +61,5 @@ public class DetectRecord {
 
     public void setProjectId(Integer projectId) {
         this.projectId = projectId;
-    }
-
-    public Integer getDetectPersonId() {
-        return detectPersonId;
-    }
-
-    public void setDetectPersonId(Integer detectPersonId) {
-        this.detectPersonId = detectPersonId;
     }
 }

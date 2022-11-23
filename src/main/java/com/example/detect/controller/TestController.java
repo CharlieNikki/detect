@@ -3,6 +3,7 @@ package com.example.detect.controller;
 import com.example.detect.entity.Test;
 import com.example.detect.service.TestService;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +15,8 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 public class TestController {
@@ -54,5 +57,19 @@ public class TestController {
         out.close();
 
         return test.toString();
+    }
+
+    @GetMapping("/getImage")
+    public Map<String,Object> getImage(Integer id) {
+
+        Test test = service.selectTestById(id);
+        byte[] bytes = (byte[]) test.getImage();
+        HashMap<String,Object> map = new HashMap<>();
+        map.put("data", 1111);
+
+        BASE64Encoder encoder = new BASE64Encoder();
+        String data = encoder.encode(bytes);
+        map.put("image", data);
+        return map;
     }
 }

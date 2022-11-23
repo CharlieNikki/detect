@@ -6,7 +6,7 @@ public interface UserService {
 
     int saveUserInfo(User user);
 
-    User selectUserInfo(String username, String password);
+    User selectUserInfo(String phone, String password);
 
     User getUserInfoById(Integer id);
 }

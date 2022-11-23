@@ -1,12 +1,21 @@
 package com.example.detect.entity;
 
-public class CheckInSheet {
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel
+public class CheckInSheet {
+    @ApiModelProperty(value = "签到编号id")
     private Integer id;
+    @ApiModelProperty(value = "用户id")
     private Integer userId;
+    @ApiModelProperty(value = "最近一次签到日期")
     private String checkInDate;
+    @ApiModelProperty(value = "最近一次签到地点")
     private String checkInLocation;
+    @ApiModelProperty(value = "最近一次签退日期")
     private String checkOutDate;
+    @ApiModelProperty(value = "最近一次签退地点")
     private String checkOutLocation;
 
     public Integer getId() {

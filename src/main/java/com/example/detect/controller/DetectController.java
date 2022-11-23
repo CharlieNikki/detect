@@ -6,23 +6,24 @@ import com.example.detect.entity.DetectRequest;
 import com.example.detect.service.DetectRecordService;
 import com.example.detect.service.DetectRequestService;
 import com.example.detect.utils.DateUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 @RestController
+@Api(tags = "检测相关接口")
 public class DetectController {
 
     @Resource
@@ -40,11 +41,21 @@ public class DetectController {
      *          2. String description --->   检测描述
      *          3. Integer detectPersonId  --->   检测人员Id
      *          4. Object image  --->    图片附件
+     * 继续检测：
+     *      点击继续检测，弹出检测记录填写，填写后，点击确认提交
+     *         点击后检测状态为检测中
      * @return
      */
     @Transactional
+    @ApiOperation("增加检测记录接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "detectPersonName", value = "检测人员姓名"),
+            @ApiImplicitParam(name = "file", value = "图片附件"),
+            @ApiImplicitParam(name = "description", value = "检测描述"),
+            @ApiImplicitParam(name = "projectId", value = "委托单号")
+    })
     @PostMapping("/addRecord")
-    public String addRecord(@Param("detectPersonId") Integer detectPersonId,
+    public String addRecord(@Param("detectPersonName") String detectPersonName,
                             @Param("file")MultipartFile file,
                             @Param("description") String description,
                             @Param("projectId")Integer projectId) throws IOException {
@@ -58,8 +69,7 @@ public class DetectController {
         record.setDescription(description);
         record.setProjectId(projectId);
         record.setImage(image);
-        record.setDetectPersonId(detectPersonId);
-        System.out.println(record.toString());
+        record.setDetectPersonName(detectPersonName);
         // 添加检测记录
         int addResult = service.addDetectRecord(record);
         // 更新检测状态
@@ -74,14 +84,10 @@ public class DetectController {
         }
     }
 
-    /**
-     * 继续检测：
-     *      点击继续检测，弹出检测记录填写，填写后，点击确认提交
-     *         点击后检测状态为检测中
-     * @return
-     */
+    /*
     @PostMapping("/continueDetect")
-    public String continueDetect(@Param("detectPersonId") Integer detectPersonId,
+    @ApiOperation("继续检测")
+    public String continueDetect(@Param("detectPersonName") String detectPersonName,
                                  @Param("file")MultipartFile file,
                                  @Param("description") String description,
                                  @Param("projectId")Integer projectId) throws IOException {
@@ -90,7 +96,7 @@ public class DetectController {
 
         DetectRecord record = new DetectRecord();
         record.setDate(DateUtil.dateFormat());
-        record.setDetectPersonId(detectPersonId);
+        record.setDetectPersonName(detectPersonName);
         record.setDescription(description);
         record.setProjectId(projectId);
         record.setImage(image);
@@ -100,7 +106,7 @@ public class DetectController {
         } else {
             return "添加失败";
         }
-    }
+    }*/
 
     /**
      * 完成检测：

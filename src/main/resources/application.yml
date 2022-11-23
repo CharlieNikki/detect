@@ -2,7 +2,12 @@ server:
   port: 8083
   servlet:
     context-path: /
+  max-http-header-size: 4048576
+
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:8080/demo

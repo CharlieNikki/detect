@@ -3,12 +3,15 @@ package com.example.detect.controller;
 import com.example.detect.entity.CheckInSheet;
 import com.example.detect.service.CheckInService;
 import com.example.detect.utils.DateUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
 @RestController
+@Api(tags = "用户签到和签退接口")
 public class CheckInController {
 
     @Resource
@@ -22,7 +25,9 @@ public class CheckInController {
      * @param c
      * @return
      */
+
     @PostMapping("/checkIn")
+    @ApiOperation("用户签到接口")
     public String checkIn(CheckInSheet c) {
         String date = DateUtil.dateFormat();
         c.setCheckInDate(date);
@@ -51,6 +56,7 @@ public class CheckInController {
      *          checkOutLocation
      *          userId
      */
+    @ApiOperation("用户签退接口")
     @PostMapping("checkOut")
     public String checkOut(CheckInSheet sheet) {
         String date = DateUtil.dateFormat();

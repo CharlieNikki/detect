@@ -9,4 +9,22 @@
         values
             (#{username}, #{password}, #{companyName}, #{phone})
     </insert>
+
+    <select id="getInfoById" resultType="com.example.detect.entity.User">
+        select
+            username, company_name as companyName, phone
+        from
+            user
+        where
+            user_id = #{id}
+    </select>
+
+    <select id="getInfo" resultType="com.example.detect.entity.User">
+        select
+            username, user_id as userId, phone, company_name as companyName
+        from
+            user
+        where
+            phone = #{phone} and password = #{password}
+    </select>
 </mapper>

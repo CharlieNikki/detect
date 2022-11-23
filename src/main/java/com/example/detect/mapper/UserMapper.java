@@ -8,11 +8,9 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface UserMapper {
 
-    @Select("select * from user where username = #{username} and password = #{password}")
-    User getInfo(@Param("username") String username, @Param("password") String password);
+    User getInfo(String phone, String password);
 
     int saveInfo(User user);
 
-    @Select("select username, company_name, phone from user where user_id = #{id}")
     User getInfoById(@Param("id") Integer id);
 }
