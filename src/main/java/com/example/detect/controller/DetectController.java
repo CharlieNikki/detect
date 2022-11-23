@@ -84,30 +84,6 @@ public class DetectController {
         }
     }
 
-    /*
-    @PostMapping("/continueDetect")
-    @ApiOperation("继续检测")
-    public String continueDetect(@Param("detectPersonName") String detectPersonName,
-                                 @Param("file")MultipartFile file,
-                                 @Param("description") String description,
-                                 @Param("projectId")Integer projectId) throws IOException {
-        BASE64Encoder encoder = new BASE64Encoder();
-        String image = encoder.encode(file.getBytes());
-
-        DetectRecord record = new DetectRecord();
-        record.setDate(DateUtil.dateFormat());
-        record.setDetectPersonName(detectPersonName);
-        record.setDescription(description);
-        record.setProjectId(projectId);
-        record.setImage(image);
-        int i = service.addDetectRecord(record);
-        if (i == 1) {
-            return "添加成功！";
-        } else {
-            return "添加失败";
-        }
-    }*/
-
     /**
      * 完成检测：
      *      若检测完成，可点击完成检测

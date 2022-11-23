@@ -9,4 +9,6 @@ public interface UserService {
     User selectUserInfo(String phone, String password);
 
     User getUserInfoById(Integer id);
+
+    int updateUserInfo(User user);
 }

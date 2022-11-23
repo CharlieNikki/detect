@@ -91,4 +91,26 @@ public class UserController {
             return "找不到个人资料";
         }
     }
+
+    /**
+     * 需要参数
+     *      userId
+     *      username
+     *      companyName
+     *      phone
+     * @param user
+     * @return
+     */
+    @ApiOperation("更改用户信息")
+    @PostMapping("/updateInfo")
+    public String updateInfo(User user) {
+
+        int i = userService.updateUserInfo(user);
+        if (i == 1) {
+            // 更改成功
+            return "更改成功";
+        } else {
+            return "更改失败";
+        }
+    }
 }
