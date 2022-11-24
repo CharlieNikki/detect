@@ -18,6 +18,7 @@ import sun.misc.BASE64Encoder;
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -55,23 +56,29 @@ public class DetectController {
     })
     @PostMapping("/addRecord")
     public Result addRecord(@Param("detectPersonName") String detectPersonName,
-                            @Param("file")MultipartFile file,
+                            @Param("file") MultipartFile file,
                             @Param("description") String description,
-                            @Param("projectId")Integer projectId) {
+                            @Param("projectId") Integer projectId,
+                            @Param("longitude") BigDecimal longitude,
+                            @Param("latitude") BigDecimal latitude) {
 
         String date = DateUtil.dateFormat();
         BASE64Encoder encoder = new BASE64Encoder();
         DetectRecord record = new DetectRecord();
         Result result = new Result();
+        String image = "";
 
         try {
-            String image = encoder.encode(file.getBytes());
+            if (file != null) {
+                image = encoder.encode(file.getBytes());
+            }
             record.setDate(date);
             record.setDescription(description);
             record.setProjectId(projectId);
             record.setImage(image);
             record.setDetectPersonName(detectPersonName);
-
+            record.setLongitude(longitude);
+            record.setLatitude(latitude);
             // 添加检测记录
             int addResult = service.addDetectRecord(record);
 
