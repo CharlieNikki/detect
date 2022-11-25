@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.detect.constant.Sign;
+
 import javax.annotation.Resource;
 
 @RestController
@@ -49,7 +51,7 @@ public class UserController {
             User user = new User();
 
             String name = username.trim();
-            String pwd = username.trim();
+            String pwd = password.trim();
             String cname = companyName.trim();
             String pNum = phone.trim();
 
@@ -61,14 +63,14 @@ public class UserController {
 
             int i = userService.saveUserInfo(user);
             if (i != 1) {
-                result.setCode(404);
+                result.setCode(Sign.RETURN_CODE_FAIL);
                 result.setMsg("注册失败！");
             } else {
-                result.setCode(200);
+                result.setCode(Sign.RETURN_CODE_SUCCESS);
                 result.setMsg("注册成功，请登录");
             }
         } catch (Exception e) {
-            result.setCode(-1);
+            result.setCode(Sign.SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
         }
         return result;
@@ -93,15 +95,15 @@ public class UserController {
         try {
             User user = userService.selectUserInfo(phone, password);
             if (user == null) {
-                result.setCode(404);
+                result.setCode(Sign.RETURN_CODE_FAIL);
                 result.setMsg("用户不存在或密码错误！");
             } else {
-                result.setCode(200);
+                result.setCode(Sign.RETURN_CODE_SUCCESS);
                 result.setMsg("登陆成功！");
                 result.setData(user);
             }
         } catch (Exception e) {
-            result.setCode(-1);
+            result.setCode(Sign.SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
         }
         return result;
@@ -121,15 +123,15 @@ public class UserController {
         try {
             User user = userService.getUserInfoById(id);
             if (user != null) {
-                result.setCode(200);
+                result.setCode(Sign.RETURN_CODE_SUCCESS);
                 result.setMsg("成功获取个人资料！");
                 result.setData(user);
             } else {
-                result.setCode(404);
+                result.setCode(Sign.RETURN_CODE_FAIL);
                 result.setMsg("获取个人资料失败");
             }
         } catch (Exception e) {
-            result.setCode(-1);
+            result.setCode(Sign.SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
         }
         return result;
@@ -147,10 +149,10 @@ public class UserController {
     @ApiOperation("更改用户信息")
     @PostMapping("/updateInfo")
     @ResponseBody
-    public Result updateInfo(@Param("userId") Integer userId,
-                             @Param("username") String username,
+    public Result updateInfo(@Param("username") String username,
                              @Param("companyName") String companyName,
-                             @Param("password") String password) {
+                             @Param("password") String password,
+                             @Param("phone") String phone) {
 
         Result result = new Result();
         User user = new User();
@@ -159,23 +161,24 @@ public class UserController {
             String name = username.trim();
             String cname = companyName.trim();
             String pwd = password.trim();
+            String ph = phone.trim();
 
             user.setUsername(name);
             user.setPassword(pwd);
             user.setCompanyName(cname);
-            user.setUserId(userId);
+            user.setPhone(ph);
             int i = userService.updateUserInfo(user);
             if (i == 1) {
                 // 更改成功
-                result.setCode(200);
+                result.setCode(Sign.RETURN_CODE_SUCCESS);
                 result.setMsg("更改个人信息成功！");
                 result.setData(user);
             } else {
-                result.setCode(404);
+                result.setCode(Sign.RETURN_CODE_FAIL);
                 result.setMsg("更改个人信息失败！");
             }
         } catch (Exception e) {
-            result.setCode(-1);
+            result.setCode(Sign.SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
         }
         return result;

@@ -12,6 +12,7 @@ import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -24,17 +25,10 @@ public class TestController {
     private TestService service;
 
     @PostMapping("/hello")
-    public String hello111(MultipartFile file) throws IOException {
-        Test test = new Test();
-        int i = 0;
-        if (file != null) {
-            BASE64Encoder encoder = new BASE64Encoder();
-            String image = encoder.encode(file.getBytes());
-            test.setImage(image);
-            i = service.insertImage(test);
-        }
-        String msg = test.toString() + ":" + i;
-        return test.toString();
+    public String hello111(HttpServletRequest request) {
+        String requestURI = request.getRequestURI();
+        StringBuffer requestURL = request.getRequestURL();
+        return requestURI;
     }
 
     @GetMapping(value = "/queryById", produces = "image/jpeg")

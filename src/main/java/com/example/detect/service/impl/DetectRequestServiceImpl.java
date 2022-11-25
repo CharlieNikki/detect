@@ -20,13 +20,13 @@ public class DetectRequestServiceImpl implements DetectRequestService {
     }
 
     @Override
-    public int updateStatusToComplete(Integer id) {
-        return mapper.updateStatusToComplete(id);
+    public int updateStatusToComplete(Integer projectId) {
+        return mapper.updateStatusToComplete(projectId);
     }
 
     @Override
-    public int selectDataStatusById(Integer id) {
-        return mapper.selectDataStatusById(id);
+    public int selectDataStatusById(Integer projectId) {
+        return mapper.selectDataStatusById(projectId);
     }
 
     @Override

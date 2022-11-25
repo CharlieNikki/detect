@@ -21,8 +21,8 @@ public class DetectRecordServiceImpl implements DetectRecordService {
     }
 
     @Override
-    public List<DetectRecord> selectRecordByProjectId(Integer id) {
-        return mapper.selectRecordByProjectId(id);
+    public List<DetectRecord> selectRecordByProjectId(Integer projectId) {
+        return mapper.selectRecordByProjectId(projectId);
     }
 
     @Override

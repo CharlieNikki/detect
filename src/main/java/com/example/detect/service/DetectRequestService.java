@@ -8,9 +8,9 @@ public interface DetectRequestService {
 
     int updateStatusToDetecting(Integer id);
 
-    int updateStatusToComplete(Integer id);
+    int updateStatusToComplete(Integer projectId);
 
-    int selectDataStatusById(Integer id);
+    int selectDataStatusById(Integer projectId);
 
     List<DetectRequest> selectDetectRequestByStatus(Integer dataStatus);
 

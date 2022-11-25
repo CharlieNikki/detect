@@ -1,5 +1,7 @@
 package com.example.detect.controller;
 
+import com.example.detect.constant.Sign;
+import com.example.detect.constant.Status;
 import com.example.detect.entity.DetectRecord;
 import com.example.detect.entity.DetectRequest;
 import com.example.detect.service.DetectRecordService;
@@ -17,10 +19,13 @@ import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import static com.example.detect.constant.Sign.*;
+import static com.example.detect.constant.Status.*;
 
 @RestController
 @Api(tags = "检测相关接口")
@@ -49,19 +54,16 @@ public class DetectController {
     @Transactional
     @ApiOperation("增加检测记录接口")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "detectPersonName", value = "检测人员姓名"),
+            @ApiImplicitParam(name = "detectPersonId", value = "检测人员id"),
             @ApiImplicitParam(name = "file", value = "图片附件"),
             @ApiImplicitParam(name = "description", value = "检测描述"),
             @ApiImplicitParam(name = "projectId", value = "委托单号")
     })
-    @PostMapping("/addRecord")
-    public Result addRecord(@Param("detectPersonName") String detectPersonName,
+    @PostMapping(value = "/addRecord")
+    public Result addRecord(@Param("detectPersonId") Integer detectPersonId,
                             @Param("file") MultipartFile file,
                             @Param("description") String description,
-                            @Param("projectId") Integer projectId,
-                            @Param("longitude") BigDecimal longitude,
-                            @Param("latitude") BigDecimal latitude) {
-
+                            @Param("projectId") Integer projectId) {
         String date = DateUtil.dateFormat();
         BASE64Encoder encoder = new BASE64Encoder();
         DetectRecord record = new DetectRecord();
@@ -76,14 +78,12 @@ public class DetectController {
             record.setDescription(description);
             record.setProjectId(projectId);
             record.setImage(image);
-            record.setDetectPersonName(detectPersonName);
-            record.setLongitude(longitude);
-            record.setLatitude(latitude);
+            record.setDetectPersonId(detectPersonId);
             // 添加检测记录
             int addResult = service.addDetectRecord(record);
 
             if (addResult == 1) {
-                result.setCode(200);
+                result.setCode(RETURN_CODE_SUCCESS);
                 result.setMsg("添加检测成功");
                 result.setData(record);
                 // 更新检测状态
@@ -97,11 +97,11 @@ public class DetectController {
                     }
                 }
             } else {
-                result.setCode(404);
-                result.setMsg("添加检测失败");
+                result.setCode(RETURN_CODE_FAIL);
+                result.setMsg(RETURN_MESSAGE_FAIL);
             }
         } catch (Exception e) {
-            result.setCode(-1);
+            result.setCode(SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
         }
         return result;
@@ -112,27 +112,36 @@ public class DetectController {
      *      若检测完成，可点击完成检测
      *          检测状态更改为检测完毕(按钮变成灰色)
      *          检测日期更改为完成时间
-     * @param id
      * @return
      */
     @ApiOperation("完成检测接口")
-    @ApiImplicitParam(name = "id", value = "委托单号")
-    @PostMapping("/completeDetect")
+    @ApiImplicitParam(name = "projectId", value = "委托单号")
+    @PostMapping("/complete")
     @ResponseBody
-    public Result completeDetect(@Param("id") Integer id) {
+    public Result completeDetect(@Param("projectId") Integer projectId) {
 
         Result result = new Result();
         try {
-            int completeResult = requestService.updateStatusToComplete(id);
-            if (completeResult == 1) {
-                result.setCode(200);
-                result.setMsg("检测已完成");
+            // 获取该工程的检测状态
+            int selectResult = requestService.selectDataStatusById(projectId);
+            // 若检测状态不为：检测完毕，则更改检测状态
+            if (selectResult != DETECT_STATUS_CODE_DETECTED) {
+                int completeResult = requestService.updateStatusToComplete(projectId);
+                if (completeResult == 1) {
+                    result.setCode(RETURN_CODE_SUCCESS);
+                    result.setMsg(RETURN_MESSAGE_SUCCESS);
+                } else {
+                    result.setCode(RETURN_CODE_FAIL);
+                    result.setMsg(RETURN_MESSAGE_FAIL);
+                }
             } else {
-                result.setCode(404);
-                result.setMsg("请求失败");
+                // 检测状态已为：检测完毕，无需更改检测状态
+                result.setCode(RETURN_CODE_INVALID_REQUEST);
+                result.setMsg(RETURN_MESSAGE_INVALID_REQUEST);
             }
+
         } catch (Exception e) {
-            result.setCode(-1);
+            result.setCode(SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
         }
         return result;
@@ -157,17 +166,17 @@ public class DetectController {
             int i = requestService.selectDataStatusById(id);
             result.setCode(i);
             if (i == 1) {
-                result.setMsg("待检测");
+                result.setMsg(DETECT_STATUS_MESSAGE_NOT_DETECT);
             } else if (i == 2) {
-                result.setMsg("检测中");
+                result.setMsg(DETECT_STATUS_MESSAGE_DETECTING);
             } else if (i == 3){
-                result.setMsg("检测完毕");
+                result.setMsg(DETECT_STATUS_MESSAGE_DETECTED);
             } else {
-                result.setCode(404);
-                result.setMsg("请求失败");
+                result.setCode(RETURN_CODE_FAIL);
+                result.setMsg(RETURN_MESSAGE_FAIL);
             }
         } catch (Exception e) {
-            result.setCode(-1);
+            result.setCode(SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
         }
         return result;
@@ -175,29 +184,28 @@ public class DetectController {
 
     /**
      * 获取信息：
-     *      检测人员id  ---->  detectPersonId
-     *      委托单号 ---> projectId
      *      该委托单号projectId的所有检测记录records
      */
-    @GetMapping("/getRecordByProjectId")
+    @GetMapping("/continue")
     @ApiOperation("获取检测记录接口")
     @ApiModelProperty(name = "id", value = "委托单号")
     @ResponseBody
-    public Result getRecordByProjectId(Integer id) {
+    public Result getRecordByProjectId(@Param("projectId") Integer projectId) {
 
         Result result = new Result();
         try {
-            List<DetectRecord> detectRecords = service.selectRecordByProjectId(id);
+            List<DetectRecord> detectRecords = service.selectRecordByProjectId(projectId);
             if (detectRecords.size() != 0) {
-                result.setCode(200);
-                result.setMsg("请求成功");
+                result.setCode(RETURN_CODE_SUCCESS);
+                result.setMsg(RETURN_MESSAGE_SUCCESS);
                 result.setData(detectRecords);
             } else {
-                result.setCode(404);
-                result.setMsg("请求失败");
+                result.setCode(RETURN_CODE_FAIL);
+                result.setMsg(RETURN_MESSAGE_FAIL);
             }
+            System.out.println(detectRecords);
         } catch (Exception e) {
-            result.setCode(-1);
+            result.setCode(SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
         }
         return result;
@@ -211,7 +219,7 @@ public class DetectController {
      *      返回工程信息
      */
     @GetMapping("/getRequestInfoByStatus")
-    @ApiOperation("获取工程信息接口")
+    @ApiOperation("根据条件获取工程信息接口")
     @ResponseBody
     @ApiImplicitParam(name = "dataStatus", value = "检测状态")
     public Result getRequestInfoByStatus(@Param("dataStatus") Integer dataStatus) {
@@ -220,15 +228,15 @@ public class DetectController {
         try {
             List<DetectRequest> detectRequests = requestService.selectDetectRequestByStatus(dataStatus);
             if (detectRequests.size() != 0) {
-                result.setCode(200);
-                result.setMsg("请求成功");
+                result.setCode(RETURN_CODE_SUCCESS);
+                result.setMsg(RETURN_MESSAGE_SUCCESS);
                 result.setData(detectRequests);
             } else {
-                result.setCode(404);
-                result.setMsg("请求失败");
+                result.setCode(RETURN_CODE_FAIL);
+                result.setMsg(RETURN_MESSAGE_FAIL);
             }
         } catch (Exception e) {
-            result.setCode(-1);
+            result.setCode(SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
         }
         return result;
@@ -260,14 +268,14 @@ public class DetectController {
                 @Cleanup ServletOutputStream out = response.getOutputStream();
                 out.write(b);
                 out.flush();
-                result.setCode(200);
-                result.setMsg("请求成功");
+                result.setCode(RETURN_CODE_SUCCESS);
+                result.setMsg(RETURN_MESSAGE_SUCCESS);
             } else {
-                result.setCode(404);
-                result.setMsg("请求失败");
+                result.setCode(RETURN_CODE_FAIL);
+                result.setMsg(RETURN_MESSAGE_FAIL);
             }
         } catch (Exception e) {
-            result.setCode(-1);
+            result.setCode(SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
         }
         return result;

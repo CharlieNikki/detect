@@ -34,6 +34,6 @@
         set
             username = #{username}, company_name = #{companyName}, password = #{password}
         where
-            user_id = #{userId}
+            phone = #{phone}
     </update>
 </mapper>

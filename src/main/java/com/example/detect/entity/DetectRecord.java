@@ -17,8 +17,6 @@ public class DetectRecord {
     private String description;
     private String date;
     private Integer projectId;
-    private String detectPersonName;
+    private Integer detectPersonId;
     private Object image;
-    private BigDecimal longitude;
-    private BigDecimal latitude;
 }

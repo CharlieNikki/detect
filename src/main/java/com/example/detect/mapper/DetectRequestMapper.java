@@ -11,14 +11,14 @@ import java.util.List;
 @Mapper
 public interface DetectRequestMapper {
 
-    @Update("update detect_request set data_status = 2 where id = #{id}")
+    @Update("update detect_request set data_status = 1 where id = #{id}")
     int updateStatusToDetecting(@Param("id") Integer projectId);
 
-    @Update("update detect_request set data_status = 3 where id = #{id}")
-    int updateStatusToComplete(@Param("id") Integer projectId);
+    @Update("update detect_request set data_status = 2 where id = #{projectId}")
+    int updateStatusToComplete(Integer projectId);
 
-    @Select("select data_status from detect_request where id = #{id}")
-    int selectDataStatusById(@Param("id") Integer id);
+    @Select("select data_status from detect_request where id = #{projectId}")
+    int selectDataStatusById(Integer projectId);
 
     List<DetectRequest> selectDetectRequestByStatus(Integer dataStatus);
 

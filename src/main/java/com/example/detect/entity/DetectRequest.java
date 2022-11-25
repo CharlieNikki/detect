@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.sql.Blob;
+import java.math.BigDecimal;
 
 @Data
 @AllArgsConstructor
@@ -20,7 +20,8 @@ public class DetectRequest {
     private String leaderPhone;
     private String projectDetail;
     private String projectCompany;
-    private String location;
+    private BigDecimal longitude;
+    private BigDecimal latitude;
     private String remark;
     private MultipartFile image;
     private Integer dataStatus;

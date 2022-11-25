@@ -13,11 +13,11 @@
 
     <select id="selectRecordByProjectId" resultType="com.example.detect.entity.DetectRecord">
         select
-            id, description, date, project_id as projectId, detect_person_name as detectPersonName, date, image
+            id, description, date, project_id as projectId, detect_person_id as detectPersonId
         from
             detect_records
         where
-            project_id = #{id}
+            project_id = #{projectId}
     </select>
 
     <select id="getImageByRecordId">
