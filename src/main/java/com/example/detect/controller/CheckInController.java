@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 
+import static com.example.detect.constant.Sign.*;
+
 @RestController
 @Api(tags = "用户签到和签退接口")
 public class CheckInController {
@@ -54,27 +56,27 @@ public class CheckInController {
                 // 该员工已存在于签到表，将其date和经纬度数据进行更新
                 int updateResult = service.updateCheckIn(c);
                 if (updateResult == 1) {
-                    result.setCode(Sign.RETURN_CODE_SUCCESS);
-                    result.setMsg("打卡成功");
+                    result.setCode(RETURN_CODE_SUCCESS);
+                    result.setMsg(RETURN_MESSAGE_SUCCESS);
                     result.setData(c);
                 } else {
-                    result.setCode(Sign.RETURN_CODE_FAIL);
-                    result.setMsg("打卡失败");
+                    result.setCode(RETURN_CODE_FAIL);
+                    result.setMsg(RETURN_MESSAGE_FAIL);
                 }
             } else {
                 // 该员工未存在于签到表，将其信息加入并更新date和location数据
                 int insertResult = service.insertSheet(c);
                 if (insertResult == 1) {
-                    result.setCode(Sign.RETURN_CODE_SUCCESS);
-                    result.setMsg("打卡成功");
+                    result.setCode(RETURN_CODE_SUCCESS);
+                    result.setMsg(RETURN_MESSAGE_SUCCESS);
                     result.setData(c);
                 } else {
-                    result.setCode(Sign.RETURN_CODE_FAIL);
-                    result.setMsg("打卡失败");
+                    result.setCode(RETURN_CODE_FAIL);
+                    result.setMsg(RETURN_MESSAGE_FAIL);
                 }
             }
         } catch (Exception e) {
-            result.setCode(Sign.SYSTEM_CODE_ERROR);
+            result.setCode(SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
         }
         return result;
