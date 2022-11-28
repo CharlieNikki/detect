@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.detect.constant.Sign;
-
 import javax.annotation.Resource;
 
 import static com.example.detect.constant.Sign.*;

@@ -12,7 +12,23 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:8080/demo
     username: root
-    password: Cph1996@
+    password: 123123
+    type: com.alibaba.druid.pool.DruidDataSource #当前数据源操作类型
+    druid:
+      aop-patterns: com.example.detect.entity.* #监控springbean
+      filters: stat, wall #底层开启功能，stat(sql监控)，wall(防火墙)
+
+      stat-view-servlet:
+        enabled: true
+        login-password: 123
+        login-username: admin
+        reset-enable: false
+
+      web-stat-filter:
+        enabled: true
+        url-pattern: /*
+        exclusions: '*.js, *.gif, *.jpg, *.png, /druid/*'
+
   servlet:
     multipart:
       max-file-size: 200MB

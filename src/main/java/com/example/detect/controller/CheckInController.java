@@ -1,6 +1,5 @@
 package com.example.detect.controller;
 
-import com.example.detect.constant.Sign;
 import com.example.detect.entity.CheckInSheet;
 import com.example.detect.service.CheckInService;
 import com.example.detect.utils.DateUtil;
