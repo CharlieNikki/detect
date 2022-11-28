@@ -3,10 +3,11 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.detect.mapper.DetectRequestMapper">
+
     <select id="selectDetectRequestByStatus" parameterType="int" resultType="com.example.detect.entity.DetectRequest">
         select
             project_name as projectName, project_company as projectCompany,
-            location, id, detect_date as detectRequestDate, data_status as dataStatus
+            location, id, detect_date as detectRequestDate, data_status as dataStatus, longitude, latitude
         from
             detect_request
         where

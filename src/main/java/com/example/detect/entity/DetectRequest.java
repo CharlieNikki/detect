@@ -20,6 +20,7 @@ public class DetectRequest {
     private String leaderPhone;
     private String projectDetail;
     private String projectCompany;
+    private String location;
     private BigDecimal longitude;
     private BigDecimal latitude;
     private String remark;

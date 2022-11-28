@@ -12,7 +12,8 @@ public interface DetectRecordMapper {
 
     int insertDetectRecord(DetectRecord record);
 
-    List<DetectRecord> selectRecordByProjectId(Integer projectId);
+    DetectRecord selectRecordByProjectId(Integer projectId);
 
     Object getImageByRecordId(Integer id);
+
 }

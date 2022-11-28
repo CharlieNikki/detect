@@ -5,6 +5,7 @@ import com.example.detect.mapper.DetectRecordMapper;
 import com.example.detect.mapper.DetectRequestMapper;
 import com.example.detect.service.DetectRecordService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -15,13 +16,14 @@ public class DetectRecordServiceImpl implements DetectRecordService {
     @Resource
     private DetectRecordMapper mapper;
 
+
     @Override
     public int addDetectRecord(DetectRecord record) {
         return mapper.insertDetectRecord(record);
     }
 
     @Override
-    public List<DetectRecord> selectRecordByProjectId(Integer projectId) {
+    public DetectRecord selectRecordByProjectId(Integer projectId) {
         return mapper.selectRecordByProjectId(projectId);
     }
 

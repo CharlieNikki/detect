@@ -5,9 +5,12 @@ import com.example.detect.entity.DetectRequest;
 import com.example.detect.service.DetectRecordService;
 import com.example.detect.service.DetectRequestService;
 import com.example.detect.utils.DateUtil;
+import com.example.detect.utils.FileUtil;
+import com.example.detect.utils.ImageUtil;
 import com.example.detect.utils.Result;
 import io.swagger.annotations.*;
 import lombok.Cleanup;
+import lombok.SneakyThrows;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +20,12 @@ import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.nio.file.Files;
+import java.util.*;
 
 import static com.example.detect.constant.Sign.*;
 import static com.example.detect.constant.Status.*;
@@ -48,6 +54,7 @@ public class DetectController {
      *         点击后检测状态为检测中
      * @return
      */
+    @SneakyThrows
     @Transactional
     @ApiOperation("增加检测记录接口")
     @ApiImplicitParams({
@@ -57,49 +64,57 @@ public class DetectController {
             @ApiImplicitParam(name = "projectId", value = "委托单号")
     })
     @PostMapping(value = "/addRecord")
+    @ResponseBody
     public Result addRecord(@Param("detectPersonId") Integer detectPersonId,
-                            @Param("file") MultipartFile file,
-                            @Param("description") String description,
-                            @Param("projectId") Integer projectId) {
-        String date = DateUtil.dateFormat();
-        BASE64Encoder encoder = new BASE64Encoder();
-        DetectRecord record = new DetectRecord();
+                                        @RequestPart("file") MultipartFile[] files,
+                                        @Param("description") String description,
+                                        @Param("projectId") Integer projectId) {
+
+        //Map<String,Object> map = new HashMap<>();
+        List<String> list = new ArrayList<>();
         Result result = new Result();
-        String image = "";
+        DetectRecord record = new DetectRecord();
+        StringBuilder imagesPath = new StringBuilder();
+        String imgPath = "";
 
-        try {
-            if (file != null) {
-                image = encoder.encode(file.getBytes());
-            }
-            record.setDate(date);
-            record.setDescription(description);
-            record.setProjectId(projectId);
-            record.setImage(image);
-            record.setDetectPersonId(detectPersonId);
-            // 添加检测记录
-            int addResult = service.addDetectRecord(record);
+        if (files.length == 0) {
+            result.setCode(RETURN_CODE_FAIL);
+            result.setMsg(RETURN_MESSAGE_FAIL);
+        } else {
+            try {
+                for (MultipartFile multipartFile : files) {
+                    // 获取文件后缀
+                    String suffixName = ImageUtil.getImagePath(multipartFile);
+                    // 生成新文件的名称
+                    String newFileName = ImageUtil.getNewFileName(suffixName);
+                    // 保存文件
+                    File file = new File(ImageUtil.getNewImagePath(newFileName));
 
-            if (addResult == 1) {
-                result.setCode(RETURN_CODE_SUCCESS);
-                result.setMsg("添加检测成功");
-                result.setData(record);
-                // 更新检测状态
-                int updateResult = requestService.updateStatusToDetecting(projectId);
-                if (updateResult == 1) {
-                    result.setMsg("添加检测成功，更新检测状态成功");
-                    // 更新最后检测日期
-                    int updateDate = requestService.updateDetectDateByProjectId(projectId, date);
-                    if (updateDate == 1) {
-                        result.setMsg("添加检测成功，更新检测状态成功，更新最后检测日期成功");
+                    boolean state = ImageUtil.saveImage(multipartFile, file);
+                    if (state) {
+                        imgPath = String.valueOf(imagesPath.append(file.getAbsolutePath()).append(","));
                     }
                 }
+                System.out.println(imagesPath.deleteCharAt(imagesPath.length() - 1));
+            } catch (Exception e) {
+                result.setCode(SYSTEM_CODE_ERROR);
+                result.setMsg(e.getMessage());
+            }
+            record.setProjectId(projectId);
+            record.setDetectPersonId(detectPersonId);
+            record.setDescription(description);
+            record.setDate(DateUtil.dateFormat());
+            record.setImage(imgPath);
+            //map.put("imgList", list);
+            int i = service.addDetectRecord(record);
+            if (i == 1) {
+                result.setCode(RETURN_CODE_SUCCESS);
+                result.setMsg(RETURN_MESSAGE_SUCCESS);
+                //result.setData(map);
             } else {
                 result.setCode(RETURN_CODE_FAIL);
                 result.setMsg(RETURN_MESSAGE_FAIL);
             }
-        } catch (Exception e) {
-            result.setCode(SYSTEM_CODE_ERROR);
-            result.setMsg(e.getMessage());
         }
         return result;
     }
@@ -183,16 +198,16 @@ public class DetectController {
      * 获取信息：
      *      该委托单号projectId的所有检测记录records
      */
-    @GetMapping("/continue")
+    @GetMapping("/getRecordsByProjectId")
     @ApiOperation("获取检测记录接口")
     @ApiModelProperty(name = "id", value = "委托单号")
     @ResponseBody
-    public Result getRecordByProjectId(@Param("projectId") Integer projectId) {
+    public Result getRecordsByProjectId(@Param("projectId") Integer projectId) {
 
         Result result = new Result();
         try {
-            List<DetectRecord> detectRecords = service.selectRecordByProjectId(projectId);
-            if (detectRecords.size() != 0) {
+            DetectRecord detectRecords = service.selectRecordByProjectId(projectId);
+            if (detectRecords != null) {
                 result.setCode(RETURN_CODE_SUCCESS);
                 result.setMsg(RETURN_MESSAGE_SUCCESS);
                 result.setData(detectRecords);
@@ -240,9 +255,17 @@ public class DetectController {
     }
 
     /**
+     * 获取图片接口
+     */
+    @GetMapping("/downloadImage")
+    public void downloadImage(HttpServletResponse response, String imagePath) {
+        FileUtil.downloadFile(response, imagePath);
+    }
+
+    /**
      * 根据检测记录id，获取上传的图片附件
      */
-    @GetMapping(value = "/getImgById", produces = "image/jpeg")
+    @GetMapping(value = "/getImgById")
     @ApiOperation("获取图片附件接口")
     @ApiModelProperty(name = "id", value = "检测记录id")
     @ResponseBody

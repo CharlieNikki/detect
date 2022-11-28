@@ -6,8 +6,6 @@ import com.example.detect.service.TestService;
 import com.example.detect.utils.Result;
 import io.swagger.annotations.Api;
 import lombok.SneakyThrows;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Decoder;
@@ -15,7 +13,6 @@ import sun.misc.BASE64Decoder;
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -32,7 +29,7 @@ public class TestController {
 
     @SneakyThrows
     @PostMapping("/pic")
-    public Result pic(MultipartFile[] images) {
+    public Result pic(@RequestPart("file") MultipartFile[] images) {
 
         String url = "/files";
         String path = System.getProperty("user.dir") + url;

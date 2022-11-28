@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -18,5 +19,5 @@ public class DetectRecord {
     private String date;
     private Integer projectId;
     private Integer detectPersonId;
-    private Object image;
+    private String image;
 }
