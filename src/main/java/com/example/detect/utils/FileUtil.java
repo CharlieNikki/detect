@@ -18,6 +18,10 @@ public class FileUtil {
     @SneakyThrows
     public static void downloadFile(HttpServletResponse response, String imagePath) {
 
+        if (imagePath == null) {
+            System.out.println("图片路径为空！");
+            return;
+        }
         String[] strArr = imagePath.split(",");
         for (String imgPath : strArr) {
             File file = new File(imgPath);

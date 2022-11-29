@@ -4,10 +4,7 @@ import com.example.detect.entity.DetectRecord;
 import com.example.detect.entity.DetectRequest;
 import com.example.detect.service.DetectRecordService;
 import com.example.detect.service.DetectRequestService;
-import com.example.detect.utils.DateUtil;
-import com.example.detect.utils.FileUtil;
-import com.example.detect.utils.ImageUtil;
-import com.example.detect.utils.Result;
+import com.example.detect.utils.*;
 import io.swagger.annotations.*;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
@@ -29,6 +26,7 @@ import java.util.*;
 
 import static com.example.detect.constant.Sign.*;
 import static com.example.detect.constant.Status.*;
+import static com.example.detect.utils.ImageUtil.SAVE_IMAGE_PATH;
 
 @RestController
 @Api(tags = "检测相关接口")
@@ -70,12 +68,11 @@ public class DetectController {
                                         @Param("description") String description,
                                         @Param("projectId") Integer projectId) {
 
-        //Map<String,Object> map = new HashMap<>();
-        List<String> list = new ArrayList<>();
         Result result = new Result();
         DetectRecord record = new DetectRecord();
         StringBuilder imagesPath = new StringBuilder();
         String imgPath = "";
+        String newFileName = "";
 
         if (files.length == 0) {
             result.setCode(RETURN_CODE_FAIL);
@@ -85,17 +82,23 @@ public class DetectController {
                 for (MultipartFile multipartFile : files) {
                     // 获取文件后缀
                     String suffixName = ImageUtil.getImagePath(multipartFile);
+                    System.out.println("suffixName:" + suffixName);
                     // 生成新文件的名称
-                    String newFileName = ImageUtil.getNewFileName(suffixName);
+                    newFileName = ImageUtil.getNewFileName(suffixName);
+                    System.out.println("newFileName:" + newFileName);
+                    System.out.println("SAVE_IMAGE_PATH:" + SAVE_IMAGE_PATH);
                     // 保存文件
                     File file = new File(ImageUtil.getNewImagePath(newFileName));
 
                     boolean state = ImageUtil.saveImage(multipartFile, file);
                     if (state) {
                         imgPath = String.valueOf(imagesPath.append(file.getAbsolutePath()).append(","));
+                        System.out.println("==========================================");
+                        System.out.println("imagesPath:" + imagesPath);
+                        System.out.println("SAVE_IMAGE_PATH:" + SAVE_IMAGE_PATH);
+                        System.out.println("newFileName:" + newFileName);
                     }
                 }
-                System.out.println(imagesPath.deleteCharAt(imagesPath.length() - 1));
             } catch (Exception e) {
                 result.setCode(SYSTEM_CODE_ERROR);
                 result.setMsg(e.getMessage());
@@ -104,13 +107,11 @@ public class DetectController {
             record.setDetectPersonId(detectPersonId);
             record.setDescription(description);
             record.setDate(DateUtil.dateFormat());
-            record.setImage(imgPath);
-            //map.put("imgList", list);
+            record.setImage(newFileName);
             int i = service.addDetectRecord(record);
             if (i == 1) {
                 result.setCode(RETURN_CODE_SUCCESS);
                 result.setMsg(RETURN_MESSAGE_SUCCESS);
-                //result.setData(map);
             } else {
                 result.setCode(RETURN_CODE_FAIL);
                 result.setMsg(RETURN_MESSAGE_FAIL);
@@ -122,7 +123,7 @@ public class DetectController {
     /**
      * 完成检测：
      *      若检测完成，可点击完成检测
-     *          检测状态更改为检测完毕(按钮变成灰色)
+     *          检测状态更改为检测完毕
      *          检测日期更改为完成时间
      * @return
      */
@@ -196,7 +197,7 @@ public class DetectController {
 
     /**
      * 获取信息：
-     *      该委托单号projectId的所有检测记录records
+     *      该委托单号projectId的检测记录record
      */
     @GetMapping("/getRecordsByProjectId")
     @ApiOperation("获取检测记录接口")
@@ -204,18 +205,25 @@ public class DetectController {
     @ResponseBody
     public Result getRecordsByProjectId(@Param("projectId") Integer projectId) {
 
+        Map<String,Object> returnMap = new HashMap<>();
+        List<String> imagesList = new ArrayList<>();
         Result result = new Result();
+
         try {
             DetectRecord detectRecords = service.selectRecordByProjectId(projectId);
             if (detectRecords != null) {
+
+                imagesList = SplitByComma.splitStringByComma(detectRecords.getImage());
                 result.setCode(RETURN_CODE_SUCCESS);
                 result.setMsg(RETURN_MESSAGE_SUCCESS);
-                result.setData(detectRecords);
+                returnMap.put("recordInfo", detectRecords);
+                returnMap.put("imagesPath", imagesList);
+
+                result.setData(returnMap);
             } else {
                 result.setCode(RETURN_CODE_FAIL);
                 result.setMsg(RETURN_MESSAGE_FAIL);
             }
-            System.out.println(detectRecords);
         } catch (Exception e) {
             result.setCode(SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
