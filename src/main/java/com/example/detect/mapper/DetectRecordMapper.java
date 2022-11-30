@@ -15,5 +15,4 @@ public interface DetectRecordMapper {
     DetectRecord selectRecordByProjectId(Integer projectId);
 
     Object getImageByRecordId(Integer id);
-
 }

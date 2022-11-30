@@ -1,5 +1,6 @@
 package com.example.detect.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.example.detect.entity.DetectRecord;
 import com.example.detect.entity.DetectRequest;
 import com.example.detect.service.DetectRecordService;
@@ -20,6 +21,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
@@ -27,6 +29,7 @@ import java.util.*;
 import static com.example.detect.constant.Sign.*;
 import static com.example.detect.constant.Status.*;
 import static com.example.detect.utils.ImageUtil.SAVE_IMAGE_PATH;
+import static com.example.detect.utils.ImageUtil.getNewImagePath;
 
 @RestController
 @Api(tags = "检测相关接口")
@@ -37,21 +40,6 @@ public class DetectController {
 
     @Resource
     private DetectRequestService requestService;
-
-    /**
-     * 现场检测：
-     *      点击现场检测，弹出检测记录填写，填写后，点击确认提交
-     *          点击后检测状态由待检测变为检测中
-     *      需要的参数：
-     *          1. Integer projectId   --->   委托单号
-     *          2. String description --->   检测描述
-     *          3. Integer detectPersonId  --->   检测人员Id
-     *          4. Object image  --->    图片附件
-     * 继续检测：
-     *      点击继续检测，弹出检测记录填写，填写后，点击确认提交
-     *         点击后检测状态为检测中
-     * @return
-     */
     @SneakyThrows
     @Transactional
     @ApiOperation("增加检测记录接口")
@@ -71,7 +59,6 @@ public class DetectController {
         Result result = new Result();
         DetectRecord record = new DetectRecord();
         StringBuilder imagesPath = new StringBuilder();
-        String imgPath = "";
         String newFileName = "";
 
         if (files.length == 0) {
@@ -80,41 +67,37 @@ public class DetectController {
         } else {
             try {
                 for (MultipartFile multipartFile : files) {
-                    // 获取文件后缀
+                    // 获取文件后缀(.jpg之类的)
                     String suffixName = ImageUtil.getImagePath(multipartFile);
-                    System.out.println("suffixName:" + suffixName);
-                    // 生成新文件的名称
+                    // 生成新文件的名称(UUID+时间戳)
                     newFileName = ImageUtil.getNewFileName(suffixName);
-                    System.out.println("newFileName:" + newFileName);
-                    System.out.println("SAVE_IMAGE_PATH:" + SAVE_IMAGE_PATH);
                     // 保存文件
                     File file = new File(ImageUtil.getNewImagePath(newFileName));
-
+                    // 将对象存入本地磁盘
                     boolean state = ImageUtil.saveImage(multipartFile, file);
+                    // 存入本地磁盘成功
                     if (state) {
-                        imgPath = String.valueOf(imagesPath.append(file.getAbsolutePath()).append(","));
-                        System.out.println("==========================================");
-                        System.out.println("imagesPath:" + imagesPath);
-                        System.out.println("SAVE_IMAGE_PATH:" + SAVE_IMAGE_PATH);
-                        System.out.println("newFileName:" + newFileName);
+                        imagesPath = imagesPath.append(newFileName).append(",");
+                    } else {
+                        result.setCode(SYSTEM_CODE_ERROR);
+                        result.setMsg("图片上传失败");
                     }
+                }
+                // 将数据存入数据库
+                record.setProjectId(projectId);
+                record.setDetectPersonId(detectPersonId);
+                record.setDescription(description);
+                record.setDate(DateUtil.dateFormat());
+                record.setImage(String.valueOf(imagesPath.deleteCharAt(imagesPath.length() - 1)));
+                // 是否存入成功
+                int i = service.addDetectRecord(record);
+                if (i == 1) {
+                    result.setCode(RETURN_CODE_SUCCESS);
+                    result.setMsg(RETURN_MESSAGE_SUCCESS);
                 }
             } catch (Exception e) {
                 result.setCode(SYSTEM_CODE_ERROR);
                 result.setMsg(e.getMessage());
-            }
-            record.setProjectId(projectId);
-            record.setDetectPersonId(detectPersonId);
-            record.setDescription(description);
-            record.setDate(DateUtil.dateFormat());
-            record.setImage(newFileName);
-            int i = service.addDetectRecord(record);
-            if (i == 1) {
-                result.setCode(RETURN_CODE_SUCCESS);
-                result.setMsg(RETURN_MESSAGE_SUCCESS);
-            } else {
-                result.setCode(RETURN_CODE_FAIL);
-                result.setMsg(RETURN_MESSAGE_FAIL);
             }
         }
         return result;
@@ -201,12 +184,12 @@ public class DetectController {
      */
     @GetMapping("/getRecordsByProjectId")
     @ApiOperation("获取检测记录接口")
-    @ApiModelProperty(name = "id", value = "委托单号")
+    @ApiModelProperty(name = "projectId", value = "委托单号")
     @ResponseBody
     public Result getRecordsByProjectId(@Param("projectId") Integer projectId) {
 
         Map<String,Object> returnMap = new HashMap<>();
-        List<String> imagesList = new ArrayList<>();
+        List<String> imagesList;
         Result result = new Result();
 
         try {
@@ -218,7 +201,6 @@ public class DetectController {
                 result.setMsg(RETURN_MESSAGE_SUCCESS);
                 returnMap.put("recordInfo", detectRecords);
                 returnMap.put("imagesPath", imagesList);
-
                 result.setData(returnMap);
             } else {
                 result.setCode(RETURN_CODE_FAIL);
@@ -265,9 +247,19 @@ public class DetectController {
     /**
      * 获取图片接口
      */
-    @GetMapping("/downloadImage")
-    public void downloadImage(HttpServletResponse response, String imagePath) {
-        FileUtil.downloadFile(response, imagePath);
+    @SneakyThrows
+    @GetMapping(value = "/getImageUrlByProjectId", produces = "image/jpeg")
+    @ResponseBody
+    public byte[] getImageUrlByProjectId(String imagesPath) {
+
+        String imageUrl = SAVE_IMAGE_PATH + imagesPath;
+        File file = new File(imageUrl);
+
+        @Cleanup FileInputStream fileInputStream = new FileInputStream(file);
+
+        byte[] bytes = new byte[fileInputStream.available()];
+        fileInputStream.read(bytes, 0, fileInputStream.available());
+        return bytes;
     }
 
     /**
@@ -308,4 +300,6 @@ public class DetectController {
         }
         return result;
     }
+
+
 }

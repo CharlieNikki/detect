@@ -12,7 +12,7 @@ public class ImageUtil {
 
     // 存放图片的绝对路径(linux)
     // private static final String SAVE_IMAGE_PATH = "/usr/local/detect/project/images/";
-    public static final String SAVE_IMAGE_PATH = "E:/images/";
+    public static final String SAVE_IMAGE_PATH = "/usr/local/detect/images/";
 
     /**
      * 返回文件后缀
@@ -50,7 +50,7 @@ public class ImageUtil {
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String date = sdf.format(new Date());
-        return date + UUID.randomUUID() + suffix;
+        return date + UUID.randomUUID().toString().replaceAll("-","") +  suffix;
     }
 
     /**
