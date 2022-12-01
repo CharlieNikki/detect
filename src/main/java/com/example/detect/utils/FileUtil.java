@@ -1,18 +1,11 @@
 package com.example.detect.utils;
 
-import lombok.Cleanup;
 import lombok.SneakyThrows;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
 
 import static com.example.detect.constant.Sign.RETURN_MESSAGE_FAIL;
-import static com.example.detect.constant.Sign.SYSTEM_CODE_ERROR;
 
 public class FileUtil {
 

@@ -37,4 +37,13 @@
         where
             project_id = #{projectId}
     </update>
+
+    <update id="addDetectImage">
+        update
+            detect_records
+        set
+            image = #{image}
+        where
+            project_id = ${projectId}
+    </update>
 </mapper>

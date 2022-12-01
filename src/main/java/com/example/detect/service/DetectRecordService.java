@@ -14,4 +14,6 @@ public interface DetectRecordService {
     Object getImageByRecordId(Integer id);
 
     int updateDetectRecord(DetectRecord record);
+
+    int addDetectImage(String image, Integer projectId);
 }

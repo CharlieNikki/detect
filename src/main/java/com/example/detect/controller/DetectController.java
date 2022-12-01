@@ -1,6 +1,5 @@
 package com.example.detect.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.example.detect.entity.DetectRecord;
 import com.example.detect.entity.DetectRequest;
 import com.example.detect.service.DetectRecordService;
@@ -14,22 +13,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.*;
 
 import static com.example.detect.constant.Sign.*;
 import static com.example.detect.constant.Status.*;
 import static com.example.detect.utils.ImageUtil.SAVE_IMAGE_PATH;
-import static com.example.detect.utils.ImageUtil.getNewImagePath;
 
 @RestController
 @Api(tags = "检测相关接口")
@@ -40,6 +35,7 @@ public class DetectController {
 
     @Resource
     private DetectRequestService requestService;
+
     @SneakyThrows
     @Transactional
     @ApiOperation("增加检测记录接口")
@@ -52,9 +48,9 @@ public class DetectController {
     @PostMapping(value = "/addRecord")
     @ResponseBody
     public Result addRecord(@Param("detectPersonId") Integer detectPersonId,
-                                        @RequestPart("file") MultipartFile[] files,
-                                        @Param("description") String description,
-                                        @Param("projectId") Integer projectId) {
+                            @RequestPart("file") MultipartFile[] files,
+                            @Param("description") String description,
+                            @Param("projectId") Integer projectId) {
 
         Result result = new Result();
         DetectRecord record = new DetectRecord();
@@ -66,6 +62,7 @@ public class DetectController {
             result.setMsg(RETURN_MESSAGE_FAIL);
         } else {
             try {
+                // 将图片文件下载至本地
                 newFileName = FileUtil.fileDownload(files);
                 if (!newFileName.equals(RETURN_MESSAGE_FAIL)) {
                     // 将数据存入数据库
@@ -146,10 +143,68 @@ public class DetectController {
     }
 
     /**
+     * 根据projectId新增图片信息
+     */
+    @PostMapping("/addImageByProjectID")
+    public Result addImageByProjectId(@Param("projectId") Integer projectId,
+                                      @Param("file") MultipartFile file) {
+
+        // 根据projectId获取检测记录信息
+        DetectRecord record = service.selectRecordByProjectId(projectId);
+        String newFileName;
+        StringBuilder imagePath = new StringBuilder();
+        String imageFinalName;
+        Result result = new Result();
+
+        if (record != null) {
+            if (file != null) {// 将图片下载至本地
+                // 获取文件后缀
+                String suffixName = ImageUtil.getImagePath(file);
+                // 生成新的文件名称
+                newFileName = ImageUtil.getNewFileName(suffixName);
+                // 保存文件
+                File f = new File(ImageUtil.getNewImagePath(newFileName));
+                // 将图片存入本地磁盘
+                boolean state = ImageUtil.saveImage(file, f);
+                if (state) {
+                    String imgPath = String.valueOf(imagePath.append(newFileName));
+                    String image = record.getImage();
+                    if (image != null) {
+                        imageFinalName = image + "," + imgPath;
+                    } else {
+                        imageFinalName = imgPath;
+                    }
+                    // 将图片名称存入数据库
+                    int i = service.addDetectImage(imageFinalName, projectId);
+                    if (i == 1) {
+                        result.setCode(RETURN_CODE_SUCCESS);
+                        result.setMsg(RETURN_MESSAGE_SUCCESS);
+                    } else {
+                        result.setCode(RETURN_CODE_FAIL);
+                        result.setMsg("图片存储失败");
+                    }
+                } else {
+                    result.setCode(RETURN_CODE_FAIL);
+                    result.setMsg("图片上传失败");
+                }
+            } else {
+                result.setCode(RETURN_CODE_FAIL);
+                result.setMsg("上传的图片不能为空");
+            }
+        } else {
+            result.setCode(RETURN_CODE_FAIL);
+            result.setMsg("检测记录为空");
+        }
+        return result;
+    }
+
+
+    /**
      * 完成检测：
-     *      若检测完成，可点击完成检测
-     *          检测状态更改为检测完毕
-     *          检测日期更改为完成时间
+     * 若检测完成，可点击完成检测
+     * 检测状态更改为检测完毕
+     * 检测日期更改为完成时间
+     *
      * @return
      */
     @ApiOperation("完成检测接口")
@@ -187,9 +242,10 @@ public class DetectController {
 
     /**
      * 获取检测状态
-     *      1： 待检测
-     *      2： 检测中
-     *      3： 检测完成
+     * 1： 待检测
+     * 2： 检测中
+     * 3： 检测完成
+     *
      * @param id
      * @return
      */
@@ -207,7 +263,7 @@ public class DetectController {
                 result.setMsg(DETECT_STATUS_MESSAGE_NOT_DETECT);
             } else if (i == 2) {
                 result.setMsg(DETECT_STATUS_MESSAGE_DETECTING);
-            } else if (i == 3){
+            } else if (i == 3) {
                 result.setMsg(DETECT_STATUS_MESSAGE_DETECTED);
             } else {
                 result.setCode(RETURN_CODE_FAIL);
@@ -222,7 +278,7 @@ public class DetectController {
 
     /**
      * 获取信息：
-     *      该委托单号projectId的检测记录record
+     * 该委托单号projectId的检测记录record
      */
     @GetMapping("/getRecordsByProjectId")
     @ApiOperation("获取检测记录接口")
@@ -230,7 +286,7 @@ public class DetectController {
     @ResponseBody
     public Result getRecordsByProjectId(@Param("projectId") Integer projectId) {
 
-        Map<String,Object> returnMap = new HashMap<>();
+        Map<String, Object> returnMap = new HashMap<>();
         List<String> imagesList;
         Result result = new Result();
 
@@ -238,12 +294,18 @@ public class DetectController {
             DetectRecord detectRecords = service.selectRecordByProjectId(projectId);
             if (detectRecords != null) {
 
-                imagesList = SplitByComma.splitStringByComma(detectRecords.getImage());
+                // 获取到的图片为：String字符串，且中间会有逗号
+                String image = detectRecords.getImage();
+                // 图片不为空
+                if (image != null) {
+                    // 将url中间的逗号除去,并加上端口号等信息
+                    imagesList = SplitByComma.splitStringByComma(detectRecords.getImage());
+                    returnMap.put("imagesPath", imagesList);
+                }
+                returnMap.put("recordInfo", detectRecords);
+                result.setData(returnMap);
                 result.setCode(RETURN_CODE_SUCCESS);
                 result.setMsg(RETURN_MESSAGE_SUCCESS);
-                returnMap.put("recordInfo", detectRecords);
-                returnMap.put("imagesPath", imagesList);
-                result.setData(returnMap);
             } else {
                 result.setCode(RETURN_CODE_FAIL);
                 result.setMsg(RETURN_MESSAGE_FAIL);
@@ -251,16 +313,17 @@ public class DetectController {
         } catch (Exception e) {
             result.setCode(SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
+            e.printStackTrace();
         }
         return result;
     }
 
     /**
      * 根据条件 ：
-     *      1：待检测
-     *      2：检测中
-     *      3：检测完成
-     *      返回工程信息
+     * 1：待检测
+     * 2：检测中
+     * 3：检测完成
+     * 返回工程信息
      */
     @GetMapping("/getRequestInfoByStatus")
     @ApiOperation("根据条件获取工程信息接口")

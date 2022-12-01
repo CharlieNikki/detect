@@ -33,5 +33,11 @@ spring:
     multipart:
       max-file-size: 200MB
       max-request-size: 200MB
+  web:
+    resources:
+      # Linux
+      static-locations: "file:/usr/local/detect"
+      # Windows
+      #static-locations: "file:E:"
 mybatis:
   mapper-locations: classpath:mapper/*.xml

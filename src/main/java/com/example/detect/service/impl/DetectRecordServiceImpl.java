@@ -36,4 +36,9 @@ public class DetectRecordServiceImpl implements DetectRecordService {
     public int updateDetectRecord(DetectRecord record) {
         return mapper.updateDetectRecord(record);
     }
+
+    @Override
+    public int addDetectImage(String image, Integer projectId) {
+        return mapper.addDetectImage(image, projectId);
+    }
 }
