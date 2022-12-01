@@ -29,4 +29,12 @@
             id = #{id}
     </select>
 
+    <update id="updateDetectRecord" parameterType="com.example.detect.entity.DetectRecord">
+        update
+            detect_records
+        set
+            description = #{description}, image = #{image}, date = #{date}
+        where
+            project_id = #{projectId}
+    </update>
 </mapper>

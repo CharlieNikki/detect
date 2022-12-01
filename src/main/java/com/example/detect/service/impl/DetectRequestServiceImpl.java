@@ -35,9 +35,7 @@ public class DetectRequestServiceImpl implements DetectRequestService {
     }
 
     @Override
-    public int updateDetectDateByProjectId(Integer projectId, String date) {
-        return mapper.updateDetectDateByProjectId(projectId, date);
+    public int updateDetectStatusAndDateByProjectId(Integer projectId, String date) {
+        return mapper.updateDetectStatusAndDateByProjectId(projectId, date);
     }
-
-
 }

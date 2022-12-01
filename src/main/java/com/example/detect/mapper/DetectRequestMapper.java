@@ -22,6 +22,6 @@ public interface DetectRequestMapper {
 
     List<DetectRequest> selectDetectRequestByStatus(Integer dataStatus);
 
-    @Update("update detect_request set detect_date = #{date} where id = #{id}")
-    int updateDetectDateByProjectId(@Param("id") Integer projectId, @Param("date") String date);
+    @Update("update detect_request set detect_date = #{date}, data_status = 1 where id = #{projectId}")
+    int updateDetectStatusAndDateByProjectId(Integer projectId, String date);
 }

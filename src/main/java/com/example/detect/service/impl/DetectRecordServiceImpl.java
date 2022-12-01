@@ -31,4 +31,9 @@ public class DetectRecordServiceImpl implements DetectRecordService {
     public Object getImageByRecordId(Integer id) {
         return mapper.getImageByRecordId(id);
     }
+
+    @Override
+    public int updateDetectRecord(DetectRecord record) {
+        return mapper.updateDetectRecord(record);
+    }
 }

@@ -12,4 +12,6 @@ public interface DetectRecordService {
     DetectRecord selectRecordByProjectId(Integer projectId);
 
     Object getImageByRecordId(Integer id);
+
+    int updateDetectRecord(DetectRecord record);
 }

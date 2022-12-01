@@ -14,5 +14,5 @@ public interface DetectRequestService {
 
     List<DetectRequest> selectDetectRequestByStatus(Integer dataStatus);
 
-    int updateDetectDateByProjectId(Integer projectId, String date);
+    int updateDetectStatusAndDateByProjectId(Integer projectId, String date);
 }

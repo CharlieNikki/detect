@@ -11,8 +11,8 @@ import java.util.UUID;
 public class ImageUtil {
 
     // 存放图片的绝对路径(linux)
-    // private static final String SAVE_IMAGE_PATH = "/usr/local/detect/project/images/";
     public static final String SAVE_IMAGE_PATH = "/usr/local/detect/images/";
+    //public static final String SAVE_IMAGE_PATH = "E:/images/";
 
     /**
      * 返回文件后缀

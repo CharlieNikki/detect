@@ -2,6 +2,7 @@ package com.example.detect.utils;
 
 import lombok.Cleanup;
 import lombok.SneakyThrows;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedInputStream;
@@ -10,42 +11,37 @@ import java.io.FileInputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 
+import static com.example.detect.constant.Sign.RETURN_MESSAGE_FAIL;
+import static com.example.detect.constant.Sign.SYSTEM_CODE_ERROR;
+
 public class FileUtil {
 
     /**
      * 文件下载
      */
     @SneakyThrows
-    public static void downloadFile(HttpServletResponse response, String imagePath) {
+    public static String fileDownload(MultipartFile[] files) {
 
-        if (imagePath == null) {
-            System.out.println("图片路径为空！");
-            return;
-        }
-        String[] strArr = imagePath.split(",");
-        for (String imgPath : strArr) {
-            File file = new File(imgPath);
-            if (!file.exists()) {
-                return;
-            }
-            response.setHeader("content-type", "application/octet-stream");
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-Disposition", "inline,imgPath=" + imgPath);
-            byte[] buff = new byte[1024];
-            @Cleanup BufferedInputStream in = null;
-            OutputStream out = null;
-            try {
-                out = response.getOutputStream();
-                in = new BufferedInputStream(Files.newInputStream(new File(imgPath).toPath()));
-                int i = in.read(buff);
-                while (i != -1) {
-                    out.write(buff, 0, buff.length);
-                    out.flush();
-                    i = in.read(buff);
+        StringBuilder imagesPath = new StringBuilder();
+        String newFileName;
+        if (files.length != 0) {
+            for (MultipartFile multipartFile : files) {
+                // 获取文件后缀(.jpg之类的)
+                String suffixName = ImageUtil.getImagePath(multipartFile);
+                // 生成新文件的名称(UUID+时间戳)
+                newFileName = ImageUtil.getNewFileName(suffixName);
+                // 保存文件
+                File file = new File(ImageUtil.getNewImagePath(newFileName));
+                // 将对象存入本地磁盘
+                boolean state = ImageUtil.saveImage(multipartFile, file);
+                // 存入本地磁盘成功
+                if (state) {
+                    imagesPath = imagesPath.append(newFileName).append(",");
+                } else {
+                    return RETURN_MESSAGE_FAIL;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         }
+        return String.valueOf(imagesPath.deleteCharAt(imagesPath.length() - 1));
     }
 }

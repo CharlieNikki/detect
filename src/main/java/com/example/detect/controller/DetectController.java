@@ -58,42 +58,84 @@ public class DetectController {
 
         Result result = new Result();
         DetectRecord record = new DetectRecord();
-        StringBuilder imagesPath = new StringBuilder();
-        String newFileName = "";
+        String newFileName;
+        String date = DateUtil.dateFormat();
 
         if (files.length == 0) {
             result.setCode(RETURN_CODE_FAIL);
             result.setMsg(RETURN_MESSAGE_FAIL);
         } else {
             try {
-                for (MultipartFile multipartFile : files) {
-                    // 获取文件后缀(.jpg之类的)
-                    String suffixName = ImageUtil.getImagePath(multipartFile);
-                    // 生成新文件的名称(UUID+时间戳)
-                    newFileName = ImageUtil.getNewFileName(suffixName);
-                    // 保存文件
-                    File file = new File(ImageUtil.getNewImagePath(newFileName));
-                    // 将对象存入本地磁盘
-                    boolean state = ImageUtil.saveImage(multipartFile, file);
-                    // 存入本地磁盘成功
-                    if (state) {
-                        imagesPath = imagesPath.append(newFileName).append(",");
+                newFileName = FileUtil.fileDownload(files);
+                if (!newFileName.equals(RETURN_MESSAGE_FAIL)) {
+                    // 将数据存入数据库
+                    record.setProjectId(projectId);
+                    record.setDetectPersonId(detectPersonId);
+                    record.setDescription(description);
+                    record.setDate(date);
+                    record.setImage(newFileName);
+                    // 是否存入成功
+                    int addResult = service.addDetectRecord(record);
+                    // 存入成功
+                    if (addResult == 1) {
+                        // 更新request状态
+                        int updateResult = requestService.updateDetectStatusAndDateByProjectId(projectId, date);
+                        if (updateResult == 1) {
+                            result.setCode(RETURN_CODE_SUCCESS);
+                            result.setMsg(RETURN_MESSAGE_SUCCESS);
+                        } else {
+                            result.setCode(RETURN_CODE_FAIL);
+                            result.setMsg(RETURN_MESSAGE_FAIL);
+                        }
                     } else {
-                        result.setCode(SYSTEM_CODE_ERROR);
-                        result.setMsg("图片上传失败");
+                        result.setCode(RETURN_CODE_FAIL);
+                        result.setMsg("数据新增失败");
                     }
+                } else {
+                    result.setCode(RETURN_CODE_FAIL);
+                    result.setMsg("图片上传失败");
                 }
-                // 将数据存入数据库
-                record.setProjectId(projectId);
-                record.setDetectPersonId(detectPersonId);
-                record.setDescription(description);
-                record.setDate(DateUtil.dateFormat());
-                record.setImage(String.valueOf(imagesPath.deleteCharAt(imagesPath.length() - 1)));
-                // 是否存入成功
-                int i = service.addDetectRecord(record);
-                if (i == 1) {
-                    result.setCode(RETURN_CODE_SUCCESS);
-                    result.setMsg(RETURN_MESSAGE_SUCCESS);
+            } catch (Exception e) {
+                result.setCode(SYSTEM_CODE_ERROR);
+                result.setMsg(e.getMessage());
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 更改检测记录
+     */
+    @PostMapping("/updateRecord")
+    public Result updateRecord(@Param("projectId") Integer projectId,
+                               @RequestPart("file") MultipartFile[] files,
+                               @Param("description") String description) {
+
+        DetectRecord record = new DetectRecord();
+        Result result = new Result();
+
+        if (files.length == 0) {
+            result.setCode(RETURN_CODE_FAIL);
+            result.setMsg(RETURN_MESSAGE_FAIL);
+        } else {
+            try {
+                String imagesPAth = FileUtil.fileDownload(files);
+                if (!imagesPAth.equals(RETURN_MESSAGE_FAIL)) {
+                    record.setDate(DateUtil.dateFormat());
+                    record.setProjectId(projectId);
+                    record.setDescription(description);
+                    record.setImage(imagesPAth);
+                    int i = service.updateDetectRecord(record);
+                    if (i == 1) {
+                        result.setCode(RETURN_CODE_SUCCESS);
+                        result.setMsg(RETURN_MESSAGE_SUCCESS);
+                    } else {
+                        result.setCode(RETURN_CODE_FAIL);
+                        result.setMsg("数据更新失败");
+                    }
+                } else {
+                    result.setCode(RETURN_CODE_FAIL);
+                    result.setMsg("数据上传失败");
                 }
             } catch (Exception e) {
                 result.setCode(SYSTEM_CODE_ERROR);
@@ -235,7 +277,7 @@ public class DetectController {
                 result.setData(detectRequests);
             } else {
                 result.setCode(RETURN_CODE_FAIL);
-                result.setMsg(RETURN_MESSAGE_FAIL);
+                result.setMsg("没有对应的信息");
             }
         } catch (Exception e) {
             result.setCode(SYSTEM_CODE_ERROR);
@@ -300,6 +342,4 @@ public class DetectController {
         }
         return result;
     }
-
-
 }
