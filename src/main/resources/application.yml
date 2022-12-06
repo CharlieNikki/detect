@@ -13,6 +13,7 @@ spring:
     url: jdbc:mysql://localhost:8080/demo
     username: root
     password: Cph1996@
+    #password: 123123
     type: com.alibaba.druid.pool.DruidDataSource #当前数据源操作类型
     druid:
       aop-patterns: com.example.detect.entity.* #监控springbean

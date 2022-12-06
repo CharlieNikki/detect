@@ -88,40 +88,30 @@ public class DetectController {
      */
     @PostMapping("/updateRecord")
     public Result updateRecord(@RequestParam("projectId") Integer projectId,
-                               @RequestPart("file") MultipartFile[] files,
                                @RequestParam("description") String description) {
 
         DetectRecord record = new DetectRecord();
         Result result = new Result();
 
-        if (files.length == 0) {
-            result.setCode(RETURN_CODE_FAIL);
-            result.setMsg(RETURN_MESSAGE_FAIL);
-        } else {
-            try {
-                String imagesPAth = FileUtil.fileDownload(files);
-                if (!imagesPAth.equals(RETURN_MESSAGE_FAIL)) {
-                    record.setDate(DateUtil.dateFormat());
-                    record.setProjectId(projectId);
-                    record.setDescription(description);
-                    record.setImage(imagesPAth);
-                    int i = service.updateDetectRecord(record);
-                    if (i == 1) {
-                        result.setCode(RETURN_CODE_SUCCESS);
-                        result.setMsg(RETURN_MESSAGE_SUCCESS);
-                    } else {
-                        result.setCode(RETURN_CODE_FAIL);
-                        result.setMsg("数据更新失败");
-                    }
-                } else {
-                    result.setCode(RETURN_CODE_FAIL);
-                    result.setMsg("数据上传失败");
-                }
-            } catch (Exception e) {
-                result.setCode(SYSTEM_CODE_ERROR);
-                result.setMsg(e.getMessage());
+        try {
+            record.setDate(DateUtil.dateFormat());
+            record.setProjectId(projectId);
+            record.setDescription(description);
+
+            int i = service.updateDetectRecord(record);
+            if (i == 1) {
+                result.setCode(RETURN_CODE_SUCCESS);
+                result.setMsg(RETURN_MESSAGE_SUCCESS);
+            } else {
+                result.setCode(RETURN_CODE_FAIL);
+                result.setMsg("数据更新失败");
             }
+
+        } catch (Exception e) {
+            result.setCode(SYSTEM_CODE_ERROR);
+            result.setMsg(e.getMessage());
         }
+
         return result;
     }
 
