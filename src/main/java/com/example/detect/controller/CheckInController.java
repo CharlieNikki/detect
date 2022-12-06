@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,9 +35,9 @@ public class CheckInController {
     @PostMapping("/checkIn")
     @ApiOperation("用户签到接口")
     @ResponseBody
-    public Result checkIn(@Param("userId") Integer userId,
-                          @Param("longitude") BigDecimal longitude,
-                          @Param("latitude") BigDecimal latitude) {
+    public Result checkIn(@RequestParam("userId") Integer userId,
+                          @RequestParam("longitude") BigDecimal longitude,
+                          @RequestParam("latitude") BigDecimal latitude) {
 
         String date = DateUtil.dateFormat();
         CheckInSheet c = new CheckInSheet();

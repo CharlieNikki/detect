@@ -7,11 +7,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -41,10 +37,10 @@ public class UserController {
     })
     @ResponseBody
     @PostMapping("/register")
-    public Result register(@Param("username") String username,
-                           @Param("password") String password,
-                           @Param("companyName") String companyName,
-                           @Param("phone") String phone) {
+    public Result register(@RequestParam("username") String username,
+                           @RequestParam("password") String password,
+                           @RequestParam("companyName") String companyName,
+                           @RequestParam("phone") String phone) {
 
         Result result = new Result();
         try {
@@ -89,8 +85,8 @@ public class UserController {
             @ApiImplicitParam(name = "phone", value = "手机号"),
             @ApiImplicitParam(name = "password", value = "密码")
     })
-    public Result login(@Param("phone") String phone,
-                        @Param("password") String password) {
+    public Result login(@RequestParam("phone") String phone,
+                        @RequestParam("password") String password) {
         Result result = new Result();
         try {
             User user = userService.selectUserInfo(phone, password);
@@ -117,7 +113,7 @@ public class UserController {
     @ResponseBody
     @ApiOperation("查看个人资料接口")
     @ApiImplicitParam(name = "id", value = "用户id")
-    public Result getUserInfo(@Param("id") Integer id) {
+    public Result getUserInfo(@RequestParam("id") Integer id) {
 
         Result result = new Result();
         try {
@@ -149,10 +145,10 @@ public class UserController {
     @ApiOperation("更改用户信息")
     @PostMapping("/updateInfo")
     @ResponseBody
-    public Result updateInfo(@Param("username") String username,
-                             @Param("companyName") String companyName,
-                             @Param("password") String password,
-                             @Param("phone") String phone) {
+    public Result updateInfo(@RequestParam("username") String username,
+                             @RequestParam("companyName") String companyName,
+                             @RequestParam("password") String password,
+                             @RequestParam("phone") String phone) {
 
         Result result = new Result();
         User user = new User();

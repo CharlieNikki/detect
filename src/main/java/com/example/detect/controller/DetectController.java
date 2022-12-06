@@ -8,7 +8,6 @@ import com.example.detect.utils.*;
 import io.swagger.annotations.*;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,10 +46,10 @@ public class DetectController {
     })
     @PostMapping(value = "/addRecord")
     @ResponseBody
-    public Result addRecord(@Param("detectPersonId") Integer detectPersonId,
-                            @RequestPart("file") MultipartFile[] files,
-                            @Param("description") String description,
-                            @Param("projectId") Integer projectId) {
+    public Result addRecord(@RequestParam("detectPersonId") Integer detectPersonId,
+                            @RequestPart(value = "file", required = false) MultipartFile[] files,
+                            @RequestParam("description") String description,
+                            @RequestParam("projectId") Integer projectId) {
 
         Result result = new Result();
         DetectRecord record = new DetectRecord();
@@ -104,9 +103,9 @@ public class DetectController {
      * 更改检测记录
      */
     @PostMapping("/updateRecord")
-    public Result updateRecord(@Param("projectId") Integer projectId,
+    public Result updateRecord(@RequestParam("projectId") Integer projectId,
                                @RequestPart("file") MultipartFile[] files,
-                               @Param("description") String description) {
+                               @RequestParam("description") String description) {
 
         DetectRecord record = new DetectRecord();
         Result result = new Result();
@@ -146,8 +145,8 @@ public class DetectController {
      * 根据projectId新增图片信息
      */
     @PostMapping("/addImageByProjectID")
-    public Result addImageByProjectId(@Param("projectId") Integer projectId,
-                                      @Param("file") MultipartFile file) {
+    public Result addImageByProjectId(@RequestParam("projectId") Integer projectId,
+                                      @RequestParam("file") MultipartFile file) {
 
         // 根据projectId获取检测记录信息
         DetectRecord record = service.selectRecordByProjectId(projectId);
@@ -211,7 +210,7 @@ public class DetectController {
     @ApiImplicitParam(name = "projectId", value = "委托单号")
     @PostMapping("/complete")
     @ResponseBody
-    public Result completeDetect(@Param("projectId") Integer projectId) {
+    public Result completeDetect(@RequestParam("projectId") Integer projectId) {
 
         Result result = new Result();
         try {
@@ -253,7 +252,7 @@ public class DetectController {
     @ApiImplicitParam(name = "id", value = "委托单号")
     @GetMapping("/getDataStatus")
     @ResponseBody
-    public Result getDataStatus(@Param("id") Integer id) {
+    public Result getDataStatus(@RequestParam("id") Integer id) {
 
         Result result = new Result();
         try {
@@ -284,7 +283,7 @@ public class DetectController {
     @ApiOperation("获取检测记录接口")
     @ApiModelProperty(name = "projectId", value = "委托单号")
     @ResponseBody
-    public Result getRecordsByProjectId(@Param("projectId") Integer projectId) {
+    public Result getRecordsByProjectId(@RequestParam("projectId") Integer projectId) {
 
         Map<String, Object> returnMap = new HashMap<>();
         List<String> imagesList;
@@ -329,7 +328,7 @@ public class DetectController {
     @ApiOperation("根据条件获取工程信息接口")
     @ResponseBody
     @ApiImplicitParam(name = "dataStatus", value = "检测状态")
-    public Result getRequestInfoByStatus(@Param("dataStatus") Integer dataStatus) {
+    public Result getRequestInfoByStatus(@RequestParam("dataStatus") Integer dataStatus) {
 
         Result result = new Result();
         try {
@@ -374,7 +373,7 @@ public class DetectController {
     @ApiOperation("获取图片附件接口")
     @ApiModelProperty(name = "id", value = "检测记录id")
     @ResponseBody
-    public Result getImgById(HttpServletResponse response, @Param("id") Integer id) {
+    public Result getImgById(HttpServletResponse response, @RequestParam("id") Integer id) {
 
         Result result = new Result();
         BASE64Decoder decoder = new BASE64Decoder();
