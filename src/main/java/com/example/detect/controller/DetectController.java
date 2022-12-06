@@ -40,62 +40,46 @@ public class DetectController {
     @ApiOperation("增加检测记录接口")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "detectPersonId", value = "检测人员id"),
-            @ApiImplicitParam(name = "file", value = "图片附件"),
             @ApiImplicitParam(name = "description", value = "检测描述"),
             @ApiImplicitParam(name = "projectId", value = "委托单号")
     })
     @PostMapping(value = "/addRecord")
     @ResponseBody
     public Result addRecord(@RequestParam("detectPersonId") Integer detectPersonId,
-                            @RequestPart(value = "file", required = false) MultipartFile[] files,
                             @RequestParam("description") String description,
                             @RequestParam("projectId") Integer projectId) {
 
         Result result = new Result();
         DetectRecord record = new DetectRecord();
-        String newFileName;
         String date = DateUtil.dateFormat();
-
-        if (files.length == 0) {
-            result.setCode(RETURN_CODE_FAIL);
-            result.setMsg(RETURN_MESSAGE_FAIL);
-        } else {
-            try {
-                // 将图片文件下载至本地
-                newFileName = FileUtil.fileDownload(files);
-                if (!newFileName.equals(RETURN_MESSAGE_FAIL)) {
-                    // 将数据存入数据库
-                    record.setProjectId(projectId);
-                    record.setDetectPersonId(detectPersonId);
-                    record.setDescription(description);
-                    record.setDate(date);
-                    record.setImage(newFileName);
-                    // 是否存入成功
-                    int addResult = service.addDetectRecord(record);
-                    // 存入成功
-                    if (addResult == 1) {
-                        // 更新request状态
-                        int updateResult = requestService.updateDetectStatusAndDateByProjectId(projectId, date);
-                        if (updateResult == 1) {
-                            result.setCode(RETURN_CODE_SUCCESS);
-                            result.setMsg(RETURN_MESSAGE_SUCCESS);
-                        } else {
-                            result.setCode(RETURN_CODE_FAIL);
-                            result.setMsg(RETURN_MESSAGE_FAIL);
-                        }
-                    } else {
-                        result.setCode(RETURN_CODE_FAIL);
-                        result.setMsg("数据新增失败");
-                    }
+        try {
+            record.setProjectId(projectId);
+            record.setDetectPersonId(detectPersonId);
+            record.setDescription(description);
+            record.setDate(date);
+            // 是否存入成功
+            int addResult = service.addDetectRecord(record);
+            // 存入成功
+            if (addResult == 1) {
+                // 更新request状态
+                int updateResult = requestService.updateDetectStatusAndDateByProjectId(projectId, date);
+                if (updateResult == 1) {
+                    result.setCode(RETURN_CODE_SUCCESS);
+                    result.setMsg(RETURN_MESSAGE_SUCCESS);
                 } else {
                     result.setCode(RETURN_CODE_FAIL);
-                    result.setMsg("图片上传失败");
+                    result.setMsg(RETURN_MESSAGE_FAIL);
                 }
-            } catch (Exception e) {
-                result.setCode(SYSTEM_CODE_ERROR);
-                result.setMsg(e.getMessage());
+            } else {
+                result.setCode(RETURN_CODE_FAIL);
+                result.setMsg("数据新增失败");
             }
+
+        } catch (Exception e) {
+            result.setCode(SYSTEM_CODE_ERROR);
+            result.setMsg(e.getMessage());
         }
+
         return result;
     }
 
