@@ -3,8 +3,11 @@ package com.example.detect.controller;
 import com.alibaba.fastjson.JSON;
 import com.example.detect.entity.DetectRecord;
 import com.example.detect.entity.DetectRequest;
+import com.example.detect.entity.Image;
+import com.example.detect.entity.ReturnImage;
 import com.example.detect.service.DetectRecordService;
 import com.example.detect.service.DetectRequestService;
+import com.example.detect.service.ImageService;
 import com.example.detect.utils.*;
 import io.swagger.annotations.*;
 import lombok.Cleanup;
@@ -26,6 +29,7 @@ import java.util.*;
 import static com.example.detect.constant.Sign.*;
 import static com.example.detect.constant.Status.*;
 import static com.example.detect.utils.ImageUtil.SAVE_IMAGE_PATH;
+import static com.example.detect.utils.ImageUtil.SAVE_IMAGE_RELATIVE_PATH;
 
 @RestController
 @Api(tags = "检测相关接口")
@@ -36,6 +40,9 @@ public class DetectController {
 
     @Resource
     private DetectRequestService requestService;
+
+    @Resource
+    private ImageService imageService;
 
     @SneakyThrows
     @Transactional
@@ -116,66 +123,6 @@ public class DetectController {
 
         return result;
     }
-
-    /**
-     * 根据projectId新增图片信息
-     * tag:
-     *      0 --> 新增
-     *      1 --> 修改
-     *      2 --> 删除
-     */
-    @PostMapping("/addImageByProjectID")
-    public Result addImageByProjectId(@RequestParam("projectId") Integer projectId,
-                                      @RequestPart(value = "file", required = false) MultipartFile file) {
-        // 根据projectId获取检测记录信息
-        DetectRecord record = service.selectRecordByProjectId(projectId);
-        String newFileName;
-        StringBuilder imagePath = new StringBuilder();
-        String imageFinalName;
-        Result result = new Result();
-
-        if (record != null) {
-            if (file != null) {// 将图片下载至本地
-                // 获取文件后缀
-                String suffixName = ImageUtil.getImagePath(file);
-                // 生成新的文件名称
-                newFileName = ImageUtil.getNewFileName(suffixName);
-                // 保存文件
-                File f = new File(ImageUtil.getNewImagePath(newFileName));
-                // 将图片存入本地磁盘
-                boolean state = ImageUtil.saveImage(file, f);
-                if (state) {
-                    String imgPath = String.valueOf(imagePath.append(newFileName));
-                    String image = record.getImage();
-                    if (image != null) {
-                        imageFinalName = image + "," + imgPath;
-                    } else {
-                        imageFinalName = imgPath;
-                    }
-                    // 将图片名称存入数据库
-                    int i = service.addDetectImage(imageFinalName, projectId);
-                    if (i == 1) {
-                        result.setCode(RETURN_CODE_SUCCESS);
-                        result.setMsg("图片上传成功");
-                    } else {
-                        result.setCode(RETURN_CODE_FAIL);
-                        result.setMsg("图片存储失败");
-                    }
-                } else {
-                    result.setCode(RETURN_CODE_FAIL);
-                    result.setMsg("图片上传失败");
-                }
-            } else {
-                result.setCode(RETURN_CODE_FAIL);
-                result.setMsg("上传的图片不能为空");
-            }
-        } else {
-            result.setCode(RETURN_CODE_FAIL);
-            result.setMsg("检测记录为空");
-        }
-        return result;
-    }
-
 
     /**
      * 完成检测：
@@ -268,19 +215,31 @@ public class DetectController {
         List<String> imagesList;
         Result result = new Result();
 
+        List<ReturnImage> returnImages = new ArrayList<>();
         try {
+            // 根据projectId获取检测记录
             DetectRecord detectRecords = service.selectRecordByProjectId(projectId);
-            if (detectRecords != null) {
+            // 根据projectId获取图片信息（多张）
+            List<Image> images = imageService.selectImagesByProjectId(projectId);
 
-                // 获取到的图片为：String字符串，且中间会有逗号
-                String image = detectRecords.getImage();
-                // 图片不为空
-                if (image != null) {
-                    // 将url中间的逗号除去,并加上端口号等信息
-                    imagesList = SplitByComma.splitStringByComma(detectRecords.getImage());
-                    returnMap.put("imagesPath", imagesList);
+            // 若获取的检测记录不为空
+            if (detectRecords != null) {
+                // 若获取的图片信息（多张）不为空
+                if (images != null) {
+                    for (Image image : images) {
+                        ReturnImage returnImage = new ReturnImage();
+                        returnImage.setId(image.getId());
+                        // 本地
+                        // imageUrl = "http://localhost:8083" + SAVE_IMAGE_RELATIVE_PATH + image.getImageName();
+                        // linux
+                        String imageUrl = "http://8.136.84.248:8083" + SAVE_IMAGE_RELATIVE_PATH + image.getImageName();
+                        System.out.println(imageUrl);
+                        returnImage.setImageUrl(imageUrl);
+                        returnImages.add(returnImage);
+                    }
                 }
                 returnMap.put("recordInfo", detectRecords);
+                returnMap.put("imageInfo", returnImages);
                 result.setData(returnMap);
                 result.setCode(RETURN_CODE_SUCCESS);
                 result.setMsg(RETURN_MESSAGE_SUCCESS);

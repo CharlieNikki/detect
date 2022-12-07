@@ -5,18 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.math.BigDecimal;
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class DetectRecord {
+public class ReturnImage {
 
     private Integer id;
-    private String description;
-    private String date;
-    private Integer projectId;
-    private Integer detectPersonId;
+    private String imageUrl;
 }

@@ -11,9 +11,10 @@ import java.util.UUID;
 
 public class ImageUtil {
 
-    // 创建文件夹
-    @Value("${path.save-image-path}")
-    public static String SAVE_IMAGE_PATH;
+    // Linux
+    public static String SAVE_IMAGE_PATH = "/usr/local/detect/images/";
+    // Windows
+    //public static String SAVE_IMAGE_PATH = "E:/images/";
     // 文件的相对路径
     public static final String SAVE_IMAGE_RELATIVE_PATH = "/images/";
 

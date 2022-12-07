@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.detect.mapper.ImageMapper">
+
+    <insert id="insertImage" parameterType="com.example.detect.entity.Image">
+        insert into
+            image(project_id, image_name, date)
+        values
+            (#{projectId}, #{imageName}, #{date})
+    </insert>
+
+    <delete id="deleteImageById">
+        delete from
+            image
+        where
+            id = #{id}
+    </delete>
+
+    <select id="selectImagesByProjectId" resultType="com.example.detect.entity.Image">
+        select
+            id, image_name as imageName
+        from
+            image
+        where
+            project_id = #{projectId}
+    </select>
+
+    <select id="selectImageById" resultType="com.example.detect.entity.Image">
+        select
+            id, project_id as projectId, image_name as imageName, date
+        from
+            image
+        where
+            id = #{id}
+    </select>
+</mapper>

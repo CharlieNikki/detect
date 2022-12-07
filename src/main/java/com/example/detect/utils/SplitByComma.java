@@ -13,7 +13,7 @@ import static com.example.detect.utils.ImageUtil.SAVE_IMAGE_RELATIVE_PATH;
 public class SplitByComma {
 
     @Value("${path.url-prefix}")
-    private static String SAVE_IMAGE_PREFIX;
+    public static String SAVE_IMAGE_PREFIX;
 
     /**
      * 用逗号隔开字符串，形成字符串数组

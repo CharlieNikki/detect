@@ -11,6 +11,13 @@ public class Result {
 
     private int code;
     private String msg;
-    private Long count;
+    private int count;
     private Object data;
+
+    public void setResult(int code, String msg, Object data, int count) {
+        this.code = code;
+        this.msg = msg;
+        this.data = data;
+        this.count = count;
+    }
 }

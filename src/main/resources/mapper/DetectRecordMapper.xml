@@ -6,14 +6,14 @@
 
     <insert id="insertDetectRecord" parameterType="com.example.detect.entity.DetectRecord">
         insert into
-            detect_records(detect_person_id, project_id, description, date, image)
+            detect_records(detect_person_id, project_id, description, date)
         values
-            (#{detectPersonId}, #{projectId}, #{description}, #{date}, #{image})
+            (#{detectPersonId}, #{projectId}, #{description}, #{date})
     </insert>
 
     <select id="selectRecordByProjectId" resultType="com.example.detect.entity.DetectRecord">
         select
-            id, description, date, project_id as projectId, detect_person_id as detectPersonId, image
+            id, description, date, project_id as projectId, detect_person_id as detectPersonId
         from
             detect_records
         where
