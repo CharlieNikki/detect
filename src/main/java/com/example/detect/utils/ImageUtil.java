@@ -1,6 +1,7 @@
 package com.example.detect.utils;
 
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -10,13 +11,9 @@ import java.util.UUID;
 
 public class ImageUtil {
 
-    // 创建存放图片的绝对路径(linux)
     // 创建文件夹
-    public static final String SAVE_IMAGE_PATH = "/usr/local/detect/images/";
-
-    // 创建存放图片的绝对路径(windows)
-    // 创建文件夹
-    //public static final String SAVE_IMAGE_PATH = "E:/images/";
+    @Value("${path.save-image-path}")
+    public static String SAVE_IMAGE_PATH;
     // 文件的相对路径
     public static final String SAVE_IMAGE_RELATIVE_PATH = "/images/";
 

@@ -1,5 +1,6 @@
 package com.example.detect.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.example.detect.entity.DetectRecord;
 import com.example.detect.entity.DetectRequest;
 import com.example.detect.service.DetectRecordService;
@@ -15,6 +16,7 @@ import sun.misc.BASE64Decoder;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
@@ -117,11 +119,14 @@ public class DetectController {
 
     /**
      * 根据projectId新增图片信息
+     * tag:
+     *      0 --> 新增
+     *      1 --> 修改
+     *      2 --> 删除
      */
     @PostMapping("/addImageByProjectID")
     public Result addImageByProjectId(@RequestParam("projectId") Integer projectId,
-                                      @RequestParam("file") MultipartFile file) {
-
+                                      @RequestPart(value = "file", required = false) MultipartFile file) {
         // 根据projectId获取检测记录信息
         DetectRecord record = service.selectRecordByProjectId(projectId);
         String newFileName;
@@ -151,7 +156,7 @@ public class DetectController {
                     int i = service.addDetectImage(imageFinalName, projectId);
                     if (i == 1) {
                         result.setCode(RETURN_CODE_SUCCESS);
-                        result.setMsg(RETURN_MESSAGE_SUCCESS);
+                        result.setMsg("图片上传成功");
                     } else {
                         result.setCode(RETURN_CODE_FAIL);
                         result.setMsg("图片存储失败");
