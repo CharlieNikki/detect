@@ -26,7 +26,10 @@ public class ImageServiceImpl implements ImageService {
         Image image = mapper.selectImageById(id);
         String imageName = image.getImageName();
         // 拼接成路径地址
-        String imagePath = "E:/images/" + imageName;
+        // Windows
+        //String imagePath = "E:/images/" + imageName;
+        // Linux
+        String imagePath = "/usr/local/detect/images/" + imageName;
         // 根据路径创建文件对象
         File file = new File(imagePath);
         // 路径是个文件且文件不为空时删除文件
