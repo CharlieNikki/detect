@@ -13,9 +13,15 @@ public class UserServiceImpl implements UserService {
     @Resource
     private UserMapper userMapper;
 
+    /**
+     * 用户注册service
+     * @param user
+     * @return
+     */
     @Override
-    public int saveUserInfo(User user) {
-        return userMapper.saveInfo(user);
+    public boolean saveUserInfo(User user) {
+        int insertResult = userMapper.saveInfo(user);
+        return insertResult == 1;
     }
 
     @Override

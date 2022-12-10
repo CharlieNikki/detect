@@ -3,6 +3,7 @@ package com.example.detect.controller;
 import com.example.detect.entity.User;
 import com.example.detect.service.UserService;
 import com.example.detect.utils.Result;
+import com.example.detect.utils.SnowflakeIdWorker;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -29,78 +30,52 @@ public class UserController {
      * @return
      */
     @ApiOperation("用户注册接口")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "username", value = "用户名"),
-            @ApiImplicitParam(name = "password", value = "密码"),
-            @ApiImplicitParam(name = "companyName", value = "公司名称"),
-            @ApiImplicitParam(name = "phone", value = "手机号")
-    })
     @ResponseBody
     @PostMapping("/register")
-    public Result register(@RequestParam("username") String username,
-                           @RequestParam("password") String password,
-                           @RequestParam("companyName") String companyName,
-                           @RequestParam("phone") String phone) {
+    public Result register(User user) {
 
         Result result = new Result();
+        SnowflakeIdWorker snow = new SnowflakeIdWorker(0, 0);
+        user.setUserId(String.valueOf(snow.nextId()));
+        boolean insertResult = false;
+
         try {
-            User user = new User();
-
-            String name = username.trim();
-            String pwd = password.trim();
-            String cname = companyName.trim();
-            String pNum = phone.trim();
-
-            user.setUsername(name);
-            user.setPassword(pwd);
-            user.setCompanyName(cname);
-            user.setPhone(pNum);
-            System.out.println(user);
-
-            int i = userService.saveUserInfo(user);
-            if (i != 1) {
-                result.setCode(RETURN_CODE_FAIL);
-                result.setMsg("该手机号已存在");
-            } else {
-                result.setCode(RETURN_CODE_SUCCESS);
-                result.setMsg(RETURN_MESSAGE_SUCCESS);
-            }
+            insertResult = userService.saveUserInfo(user);
         } catch (Exception e) {
-            result.setCode(SYSTEM_CODE_ERROR);
-            result.setMsg(e.getMessage());
+            result.setResult(SYSTEM_CODE_ERROR, e.getMessage(), null, 0);
+        }
+        if (insertResult) {
+            // 注册成功
+            result.setResult(RETURN_CODE_SUCCESS, RETURN_MESSAGE_SUCCESS, user, 1);
+        } else {
+            // 注册失败
+            result.setResult(RETURN_CODE_FAIL, "该手机号已经存在", null, 0);
         }
         return result;
     }
 
     /**
      * 登陆验证
-     * @param phone
-     * @param password
-     * @return
      */
     @PostMapping("/login")
     @ResponseBody
     @ApiOperation("用户登录接口")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "phone", value = "手机号"),
-            @ApiImplicitParam(name = "password", value = "密码")
-    })
     public Result login(@RequestParam("phone") String phone,
                         @RequestParam("password") String password) {
+
         Result result = new Result();
+        User user = null;
         try {
-            User user = userService.selectUserInfo(phone, password);
-            if (user == null) {
-                result.setCode(RETURN_CODE_FAIL);
-                result.setMsg("用户不存在或密码错误！");
-            } else {
-                result.setCode(RETURN_CODE_SUCCESS);
-                result.setMsg(RETURN_MESSAGE_SUCCESS);
-                result.setData(user);
-            }
+            user = userService.selectUserInfo(phone, password);
         } catch (Exception e) {
             result.setCode(SYSTEM_CODE_ERROR);
             result.setMsg(e.getMessage());
+        }
+        if (user != null) {
+            // 登陆成功
+            result.setResult(RETURN_CODE_SUCCESS, RETURN_MESSAGE_SUCCESS, user, 1);
+        } else {
+            result.setResult(RETURN_CODE_FAIL, "密码错误", null, 0);
         }
         return result;
     }

@@ -11,7 +11,7 @@ public interface UserMapper {
 
     int saveInfo(User user);
 
-    User getInfoById(@Param("id") Integer id);
+    User getInfoById(Integer id);
 
     int updateUserInfo(User user);
 }

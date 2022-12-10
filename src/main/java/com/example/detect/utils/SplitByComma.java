@@ -12,8 +12,9 @@ import static com.example.detect.utils.ImageUtil.SAVE_IMAGE_RELATIVE_PATH;
 
 public class SplitByComma {
 
-    @Value("${path.url-prefix}")
-    public static String SAVE_IMAGE_PREFIX;
+    public static String SAVE_IMAGE_PREFIX = "E:/images/";
+
+    //public static String SAVE_IMAGE_PREFIX = "/usr/local/detect/images/";
 
     /**
      * 用逗号隔开字符串，形成字符串数组

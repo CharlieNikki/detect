@@ -5,9 +5,9 @@
 <mapper namespace="com.example.detect.mapper.UserMapper">
     <insert id="saveInfo" parameterType="com.example.detect.entity.User">
         insert into
-            user(username, password, company_name, phone)
+            user(user_id, username, password, company_name, phone)
         values
-            (#{username}, #{password}, #{companyName}, #{phone})
+            (#{userId}, #{username}, #{password}, #{companyName}, #{phone})
     </insert>
 
     <select id="getInfoById" resultType="com.example.detect.entity.User">

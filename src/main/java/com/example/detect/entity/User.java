@@ -23,5 +23,5 @@ public class User {
     @ApiModelProperty("手机号")
     private String phone;
     @ApiModelProperty("用户id")
-    private Integer userId;
+    private String userId;
 }
