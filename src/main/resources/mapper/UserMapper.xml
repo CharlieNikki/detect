@@ -3,29 +3,42 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.detect.mapper.UserMapper">
+
+    <!--用户注册-->
     <insert id="saveInfo" parameterType="com.example.detect.entity.User">
         insert into
-            user(user_id, username, password, company_name, phone)
+            user(user_id, username, password, company_name, phone, user_type)
         values
-            (#{userId}, #{username}, #{password}, #{companyName}, #{phone})
+            (#{userId}, #{username}, #{password}, #{companyName}, #{phone}, #{userType})
     </insert>
 
+    <!--根据id获取个人资料-->
     <select id="getInfoById" resultType="com.example.detect.entity.User">
         select
-            username, company_name as companyName, phone, password
+            username, company_name as companyName, phone, password, user_type as userType
         from
             user
         where
             user_id = #{id}
     </select>
 
+    <!--用户登录验证-->
     <select id="getInfo" resultType="com.example.detect.entity.User">
         select
-            username, user_id as userId, phone, company_name as companyName
+            username, user_id as userId, phone, company_name as companyName, user_type as userType
         from
             user
         where
             phone = #{phone} and password = #{password}
+    </select>
+
+    <select id="selectUserByPhone" resultType="com.example.detect.entity.User">
+        select
+            username, user_id as userId, password, phone, company_name as companyName, user_type as userType
+        from
+            user
+        where
+            phone = #{phone}
     </select>
     
     <update id="updateUserInfo" parameterType="com.example.detect.entity.User">

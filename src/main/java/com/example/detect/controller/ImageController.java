@@ -22,34 +22,24 @@ public class ImageController {
 
     /**
      * 新增图片
-     * @param file 图片
-     * @param projectId 工程id
-     * @return
      */
     @PostMapping("/insertImage")
     public Result insertImage(@RequestPart(value = "file")MultipartFile file,
-                              @RequestParam(value = "projectId") Integer projectId) {
+                              @RequestParam(value = "projectId") String projectId) {
 
         Result result = new Result();
-        String newFileName;
-        String date = DateUtil.dateFormat();
-        Image image = new Image();
+        boolean isInsert = false;
 
         try {
-            newFileName = FileUtil.fileDownload(file);
-            if (!newFileName.equals(RETURN_MESSAGE_FAIL)) {
-                // 数据库新增
-                image.setImage(projectId, newFileName, date);
-                int insertResult = service.insertImage(image);
-                if (insertResult == 1) {
-                    result.setResult(RETURN_CODE_SUCCESS, RETURN_MESSAGE_SUCCESS, null, insertResult);
-                } else {
-                    result.setResult(RETURN_CODE_FAIL, "图片新增失败", null, 0);
-                }
-            }
+            isInsert = service.insertImage(file, projectId);
         } catch (Exception e) {
             result.setResult(SYSTEM_CODE_ERROR, e.getMessage(), null, 0);
             e.printStackTrace();
+        }
+        if (isInsert) {
+            result.setResult(RETURN_CODE_SUCCESS, RETURN_MESSAGE_SUCCESS, null, 1);
+        } else {
+            result.setResult(RETURN_CODE_FAIL, "图片新增失败", null, 0);
         }
         return result;
     }
@@ -60,19 +50,21 @@ public class ImageController {
      * @return
      */
     @PostMapping("/deleteImage")
-    public Result deleteImage(@RequestParam(value = "id") Integer id) {
+    public Result deleteImage(@RequestParam(value = "id") String id) {
 
+        boolean deleteResult = false;
         Result result = new Result();
         try {
-            boolean deleteResult = service.deleteImageById(id);
-            if (deleteResult) {
-                result.setResult(RETURN_CODE_SUCCESS, RETURN_MESSAGE_SUCCESS, null, 1);
-            } else {
-                result.setResult(RETURN_CODE_FAIL, "没有这张图片", null, 0);
-            }
+            // 根据图片id删除图片信息
+            deleteResult = service.deleteImageById(id);
         } catch (Exception e) {
             result.setResult(SYSTEM_CODE_ERROR, e.getMessage(), null, 0);
             e.printStackTrace();
+        }
+        if (deleteResult) {
+            result.setResult(RETURN_CODE_SUCCESS, RETURN_MESSAGE_SUCCESS, null, 1);
+        } else {
+            result.setResult(RETURN_CODE_FAIL, "没有这张图片", null, 0);
         }
         return result;
     }
@@ -82,7 +74,7 @@ public class ImageController {
      */
     @GetMapping("/getImages")
     @ResponseBody
-    public Result getImages(Integer projectId) {
+    public Result getImages(String projectId) {
 
         Result result = new Result();
         List<Image> images = service.selectImagesByProjectId(projectId);

@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface DetectRequestService {
 
-    int updateStatusToDetecting(Integer id);
+    int updateStatusToDetecting(String id);
 
-    int updateStatusToComplete(Integer projectId);
+    int updateStatusToComplete(String projectId);
 
-    int selectDataStatusById(Integer projectId);
+    int selectDataStatusById(String projectId);
 
     List<DetectRequest> selectDetectRequestByStatus(Integer dataStatus);
 
-    int updateDetectStatusAndDateByProjectId(Integer projectId, String date);
+    int updateDetectStatusAndDateByProjectId(String projectId, String date);
 }

@@ -19,7 +19,7 @@ public class CheckInServiceImpl implements CheckInService {
     }
 
     @Override
-    public CheckInSheet personExists(Integer userId) {
+    public CheckInSheet personExists(String userId) {
         return  mapper.personExists(userId);
     }
 

@@ -11,7 +11,9 @@ public interface UserMapper {
 
     int saveInfo(User user);
 
-    User getInfoById(Integer id);
+    User getInfoById(String id);
 
     int updateUserInfo(User user);
+
+    User selectUserByPhone(String phone);
 }

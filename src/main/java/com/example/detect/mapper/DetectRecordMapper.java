@@ -10,13 +10,16 @@ import java.util.List;
 @Mapper
 public interface DetectRecordMapper {
 
+    /**
+     * 添加检测记录
+     */
     int insertDetectRecord(DetectRecord record);
 
-    DetectRecord selectRecordByProjectId(Integer projectId);
+    DetectRecord selectRecordByProjectId(String projectId);
 
-    Object getImageByRecordId(Integer id);
+    Object getImageByRecordId(String id);
 
     int updateDetectRecord(DetectRecord record);
 
-    int addDetectImage(String image, Integer projectId);
+    int addDetectImage(String image, String projectId);
 }

@@ -4,16 +4,18 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.detect.mapper.DetectRecordMapper">
 
+    <!--添加检测记录-->
     <insert id="insertDetectRecord" parameterType="com.example.detect.entity.DetectRecord">
         insert into
-            detect_records(detect_person_id, project_id, description, date)
+            detect_records(id, user_id, project_id, description, date)
         values
-            (#{detectPersonId}, #{projectId}, #{description}, #{date})
+            (#{id}, #{userId}, #{projectId}, #{description}, #{date})
     </insert>
 
+    <!--根据projectId返回检测记录信息-->
     <select id="selectRecordByProjectId" resultType="com.example.detect.entity.DetectRecord">
         select
-            id, description, date, project_id as projectId, detect_person_id as detectPersonId
+            id, description, date, project_id as projectId, user_id as userId
         from
             detect_records
         where
@@ -29,11 +31,12 @@
             id = #{id}
     </select>
 
+    <!--更改检测记录信息-->
     <update id="updateDetectRecord" parameterType="com.example.detect.entity.DetectRecord">
         update
             detect_records
         set
-            description = #{description}, image = #{image}, date = #{date}
+            description = #{description}, date = #{date}
         where
             project_id = #{projectId}
     </update>

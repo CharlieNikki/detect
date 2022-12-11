@@ -12,10 +12,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:8080/demo
     username: root
-    #本地
     password: 123456
-    #Linux
-    #password: Cph1996@
     type: com.alibaba.druid.pool.DruidDataSource #当前数据源操作类型
     druid:
       aop-patterns: com.example.detect.entity.* #监控springbean
@@ -38,20 +35,11 @@ spring:
       max-request-size: 200MB
   web:
     resources:
-      # Linux
-      #static-locations: "file:/usr/local/detect"
-      # Windows
-      static-locations: "file:E:"
+      static-locations: "file:D:"
 mybatis:
   mapper-locations: classpath:mapper/*.xml
 
 path:
-  # Linux
-  save-image-path: "/usr/local/detect/images/"
-  # 本地
-  #save-image-path: "E:/images/"
-  # Linux
-  url-prefix: "http://8.136.84.248:8083"
-  # 本地
-  #url-prefix: "http://localhost:8083"
+  save-image-path: "D:/images/"
+  url-prefix: "http://localhost:8083"
 

@@ -15,22 +15,22 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 用户注册service
-     * @param user
-     * @return
      */
     @Override
     public boolean saveUserInfo(User user) {
-        int insertResult = userMapper.saveInfo(user);
-        return insertResult == 1;
+        return userMapper.saveInfo(user) == 1;
+    }
+
+    /**
+     * 用户登录验证service
+     */
+    @Override
+    public User selectUserInfo(String phone) {
+        return userMapper.selectUserByPhone(phone);
     }
 
     @Override
-    public User selectUserInfo(String phone, String password) {
-        return userMapper.getInfo(phone, password);
-    }
-
-    @Override
-    public User getUserInfoById(Integer id) {
+    public User getUserInfoById(String id) {
         return userMapper.getInfoById(id);
     }
 

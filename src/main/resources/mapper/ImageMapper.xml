@@ -6,9 +6,9 @@
 
     <insert id="insertImage" parameterType="com.example.detect.entity.Image">
         insert into
-            image(project_id, image_name, date)
+            image(id, project_id, image_name, date)
         values
-            (#{projectId}, #{imageName}, #{date})
+            (#{id}, #{projectId}, #{imageName}, #{date})
     </insert>
 
     <delete id="deleteImageById">

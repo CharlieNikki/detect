@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @ToString
 public class DetectRequest {
 
-    private Integer id;
+    private String id;
     private String projectName;
     private String leaderName;
     private String leaderPhone;

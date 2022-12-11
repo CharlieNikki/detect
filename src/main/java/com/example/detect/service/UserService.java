@@ -6,9 +6,9 @@ public interface UserService {
 
     boolean saveUserInfo(User user);
 
-    User selectUserInfo(String phone, String password);
+    User selectUserInfo(String phone);
 
-    User getUserInfoById(Integer id);
+    User getUserInfoById(String id);
 
     int updateUserInfo(User user);
 }

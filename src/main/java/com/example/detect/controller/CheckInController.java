@@ -35,7 +35,7 @@ public class CheckInController {
     @PostMapping("/checkIn")
     @ApiOperation("用户签到接口")
     @ResponseBody
-    public Result checkIn(@RequestParam("userId") Integer userId,
+    public Result checkIn(@RequestParam("userId") String userId,
                           @RequestParam("longitude") BigDecimal longitude,
                           @RequestParam("latitude") BigDecimal latitude) {
 

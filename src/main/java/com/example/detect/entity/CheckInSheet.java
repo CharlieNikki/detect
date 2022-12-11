@@ -17,9 +17,9 @@ import java.math.BigDecimal;
 public class CheckInSheet {
 
     @ApiModelProperty(value = "签到编号id")
-    private Integer id;
+    private String id;
     @ApiModelProperty(value = "用户id")
-    private Integer userId;
+    private String userId;
     @ApiModelProperty(value = "最近一次签到日期")
     private String checkInDate;
     @ApiModelProperty("打卡经度")

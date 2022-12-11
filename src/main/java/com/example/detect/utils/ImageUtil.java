@@ -14,7 +14,7 @@ public class ImageUtil {
     // Linux
     public static String SAVE_IMAGE_PATH = "/usr/local/detect/images/";
     // Windows
-    //public static String SAVE_IMAGE_PATH = "E:/images/";
+    //public static String SAVE_IMAGE_PATH = "D:/images/";
     // 文件的相对路径
     public static final String SAVE_IMAGE_RELATIVE_PATH = "/images/";
 

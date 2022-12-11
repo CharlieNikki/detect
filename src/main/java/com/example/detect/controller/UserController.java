@@ -5,8 +5,6 @@ import com.example.detect.service.UserService;
 import com.example.detect.utils.Result;
 import com.example.detect.utils.SnowflakeIdWorker;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,11 +29,9 @@ public class UserController {
 
         Result result = new Result();
         // 使用雪花算法为用户生成唯一id
-        SnowflakeIdWorker snow = new SnowflakeIdWorker(0, 0);
-        user.setUserId(String.valueOf(snow.nextId()));
+        user.setUserId(String.valueOf(new SnowflakeIdWorker(0,0).nextId()));
         // 注册成功标识
         boolean isRegister = false;
-
         try {
             // 用户注册
             isRegister = userService.saveUserInfo(user);
@@ -64,16 +60,24 @@ public class UserController {
         Result result = new Result();
         User user = null;
         try {
-            user = userService.selectUserInfo(phone, password);
+            // 判断该用户是否存在
+            user = userService.selectUserInfo(phone);
         } catch (Exception e) {
-            result.setCode(SYSTEM_CODE_ERROR);
-            result.setMsg(e.getMessage());
+            result.setResult(SYSTEM_CODE_ERROR, e.getMessage(), null, 0);
         }
+        // 该用户存在
         if (user != null) {
-            // 登陆成功
-            result.setResult(RETURN_CODE_SUCCESS, RETURN_MESSAGE_SUCCESS, user, 1);
+            // 判断密码是否匹配
+            if (user.getPassword().equals(password)) {
+                // 密码匹配，登陆成功
+                result.setResult(RETURN_CODE_SUCCESS, RETURN_MESSAGE_SUCCESS, user, 1);
+            } else {
+                // 密码不匹配，登陆失败
+                result.setResult(RETURN_CODE_FAIL, "密码错误", null, 0);
+            }
         } else {
-            result.setResult(RETURN_CODE_FAIL, "密码错误", null, 0);
+            // 该用户不存在
+            result.setResult(RETURN_CODE_FAIL, "该用户不存在", null, 0);
         }
         return result;
     }
@@ -84,56 +88,35 @@ public class UserController {
     @GetMapping("/getUserInfo")
     @ResponseBody
     @ApiOperation("查看个人资料接口")
-    public Result getUserInfo(@RequestParam("id") Integer id) {
+    public Result getUserInfo(@RequestParam("id") String id) {
 
         Result result = new Result();
+        User user = null;
         try {
-            User user = userService.getUserInfoById(id);
-            if (user != null) {
-                result.setCode(RETURN_CODE_SUCCESS);
-                result.setMsg(RETURN_MESSAGE_SUCCESS);
-                result.setData(user);
-            } else {
-                result.setCode(RETURN_CODE_FAIL);
-                result.setMsg(RETURN_MESSAGE_FAIL);
-            }
+            // 根据用户id查看个人资料
+            user = userService.getUserInfoById(id);
         } catch (Exception e) {
-            result.setCode(SYSTEM_CODE_ERROR);
-            result.setMsg(e.getMessage());
+            result.setResult(SYSTEM_CODE_ERROR, e.getMessage(), null, 0);
+        }
+        if (user != null) {
+            result.setResult(RETURN_CODE_SUCCESS, RETURN_MESSAGE_SUCCESS, user, 1);
+        } else {
+            result.setResult(RETURN_CODE_FAIL, "无法查看个人资料", null, 0);
         }
         return result;
     }
 
     /**
-     * 需要参数
-     *      userId
-     *      username
-     *      companyName
-     *      password
-     * @param
-     * @return
+     * 更改用户信息
      */
     @ApiOperation("更改用户信息")
     @PostMapping("/updateInfo")
     @ResponseBody
-    public Result updateInfo(@RequestParam("username") String username,
-                             @RequestParam("companyName") String companyName,
-                             @RequestParam("password") String password,
-                             @RequestParam("phone") String phone) {
+    public Result updateInfo(User user) {
 
         Result result = new Result();
-        User user = new User();
-
+        boolean isUpdate = false;
         try {
-            String name = username.trim();
-            String cname = companyName.trim();
-            String pwd = password.trim();
-            String ph = phone.trim();
-
-            user.setUsername(name);
-            user.setPassword(pwd);
-            user.setCompanyName(cname);
-            user.setPhone(ph);
             int i = userService.updateUserInfo(user);
             if (i == 1) {
                 // 更改成功

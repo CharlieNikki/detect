@@ -4,6 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.detect.mapper.DetectRequestMapper">
 
+    <!--根据status，获取project信息-->
     <select id="selectDetectRequestByStatus" parameterType="int" resultType="com.example.detect.entity.DetectRequest">
         select
             project_name as projectName, project_company as projectCompany,
@@ -13,4 +14,13 @@
         where
             data_status = #{dataStatus}
     </select>
+
+    <update id="updateStatusAndDateByProjectId" >
+        update
+            detect_request
+        set
+            detect_date = #{date}, data_status = #{status}
+        where
+            id = #{projectId}
+    </update>
 </mapper>

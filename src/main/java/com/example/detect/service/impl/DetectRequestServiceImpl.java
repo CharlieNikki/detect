@@ -15,17 +15,17 @@ public class DetectRequestServiceImpl implements DetectRequestService {
     private DetectRequestMapper mapper;
 
     @Override
-    public int updateStatusToDetecting(Integer id) {
+    public int updateStatusToDetecting(String id) {
         return mapper.updateStatusToDetecting(id);
     }
 
     @Override
-    public int updateStatusToComplete(Integer projectId) {
+    public int updateStatusToComplete(String projectId) {
         return mapper.updateStatusToComplete(projectId);
     }
 
     @Override
-    public int selectDataStatusById(Integer projectId) {
+    public int selectDataStatusById(String projectId) {
         return mapper.selectDataStatusById(projectId);
     }
 
@@ -35,7 +35,7 @@ public class DetectRequestServiceImpl implements DetectRequestService {
     }
 
     @Override
-    public int updateDetectStatusAndDateByProjectId(Integer projectId, String date) {
+    public int updateDetectStatusAndDateByProjectId(String projectId, String date) {
         return mapper.updateDetectStatusAndDateByProjectId(projectId, date);
     }
 }

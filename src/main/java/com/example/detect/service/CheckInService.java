@@ -6,7 +6,7 @@ public interface CheckInService {
 
     int insertSheet(CheckInSheet sheet);
 
-    CheckInSheet personExists(Integer userId);
+    CheckInSheet personExists(String userId);
 
     int updateCheckIn(CheckInSheet sheet);
 }

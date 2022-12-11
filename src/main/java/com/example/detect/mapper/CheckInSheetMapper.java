@@ -8,7 +8,7 @@ public interface CheckInSheetMapper {
 
     int insertSheet(CheckInSheet sheet);
 
-    CheckInSheet personExists(@Param("userId") Integer userId);
+    CheckInSheet personExists(@Param("userId") String userId);
 
     int updateCheckIn(CheckInSheet sheet);
 

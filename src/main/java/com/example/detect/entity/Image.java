@@ -11,12 +11,13 @@ import lombok.ToString;
 @ToString
 public class Image {
 
-    private Integer id;// 图片id
+    private String id;// 图片id
     private String imageName;// 图片名称
-    private Integer projectId;// 工程id
+    private String projectId;// 工程id
     private String date;// 图片存入日期
 
-    public void setImage(Integer projectId, String imageName, String date) {
+    public void setImage(String id, String projectId, String imageName, String date) {
+        this.id = id;
         this.projectId = projectId;
         this.imageName = imageName;
         this.date = date;

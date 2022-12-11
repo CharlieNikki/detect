@@ -11,6 +11,6 @@ import lombok.ToString;
 @ToString
 public class ReturnImage {
 
-    private Integer id;
+    private String id;
     private String imageUrl;
 }

@@ -14,9 +14,9 @@ import java.util.List;
 @ToString
 public class DetectRecord {
 
-    private Integer id;
+    private String id;
     private String description;
     private String date;
-    private Integer projectId;
-    private Integer detectPersonId;
+    private String projectId;
+    private String userId;
 }

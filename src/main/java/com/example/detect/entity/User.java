@@ -24,4 +24,5 @@ public class User {
     private String phone;
     @ApiModelProperty("用户id")
     private String userId;
+    private Integer userType;
 }

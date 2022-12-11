@@ -10,9 +10,9 @@ public interface ImageMapper {
 
     int insertImage(Image image);
 
-    int deleteImageById(Integer id);
+    int deleteImageById(String id);
 
-    List<Image> selectImagesByProjectId(Integer projectId);
+    List<Image> selectImagesByProjectId(String projectId);
 
-    Image selectImageById(Integer id);
+    Image selectImageById(String id);
 }
