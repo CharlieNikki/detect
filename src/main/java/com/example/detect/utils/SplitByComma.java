@@ -3,7 +3,6 @@ package com.example.detect.utils;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,7 +11,8 @@ import static com.example.detect.utils.ImageUtil.SAVE_IMAGE_RELATIVE_PATH;
 
 public class SplitByComma {
 
-    public static String SAVE_IMAGE_PREFIX = "E:/images/";
+    @Value("${path.url-prefix}")
+    public String SAVE_IMAGE_PREFIX;
 
     //public static String SAVE_IMAGE_PREFIX = "/usr/local/detect/images/";
 
@@ -22,7 +22,7 @@ public class SplitByComma {
      * @return
      */
     @SneakyThrows
-    public static List<String> splitStringByComma(String images) {
+    public List<String> splitStringByComma(String images) {
 
         String[] split = images.split(",");
         for (int i = 0; i < split.length; i++) {

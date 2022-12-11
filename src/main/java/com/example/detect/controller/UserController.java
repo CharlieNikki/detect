@@ -22,12 +22,7 @@ public class UserController {
     private UserService userService;
 
     /**
-     * 注册
-     *      username
-     *      password
-     *      companyName
-     *      phone
-     * @return
+     * 用户注册
      */
     @ApiOperation("用户注册接口")
     @ResponseBody
@@ -35,16 +30,19 @@ public class UserController {
     public Result register(User user) {
 
         Result result = new Result();
+        // 使用雪花算法为用户生成唯一id
         SnowflakeIdWorker snow = new SnowflakeIdWorker(0, 0);
         user.setUserId(String.valueOf(snow.nextId()));
-        boolean insertResult = false;
+        // 注册成功标识
+        boolean isRegister = false;
 
         try {
-            insertResult = userService.saveUserInfo(user);
+            // 用户注册
+            isRegister = userService.saveUserInfo(user);
         } catch (Exception e) {
             result.setResult(SYSTEM_CODE_ERROR, e.getMessage(), null, 0);
         }
-        if (insertResult) {
+        if (isRegister) {
             // 注册成功
             result.setResult(RETURN_CODE_SUCCESS, RETURN_MESSAGE_SUCCESS, user, 1);
         } else {
@@ -81,13 +79,11 @@ public class UserController {
     }
 
     /**
-     * 点击“个人资料”，返回个人资料数据
-     * 根据id查看个人资料
+     * 查看个人资料
      */
     @GetMapping("/getUserInfo")
     @ResponseBody
     @ApiOperation("查看个人资料接口")
-    @ApiImplicitParam(name = "id", value = "用户id")
     public Result getUserInfo(@RequestParam("id") Integer id) {
 
         Result result = new Result();
