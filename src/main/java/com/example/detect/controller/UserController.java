@@ -30,6 +30,8 @@ public class UserController {
         Result result = new Result();
         // 使用雪花算法为用户生成唯一id
         user.setUserId(String.valueOf(new SnowflakeIdWorker(0,0).nextId()));
+        // 给定用户类型
+        user.setUserType(1);
         // 注册成功标识
         boolean isRegister = false;
         try {
