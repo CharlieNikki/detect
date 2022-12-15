@@ -10,9 +10,9 @@ spring:
       matching-strategy: ant_path_matcher
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:8080/demo
+    url: jdbc:mysql://8.136.84.248:8080/demo
     username: root
-    password: 123456
+    password: Cph1996@
     type: com.alibaba.druid.pool.DruidDataSource #当前数据源操作类型
     druid:
       aop-patterns: com.example.detect.entity.* #监控springbean

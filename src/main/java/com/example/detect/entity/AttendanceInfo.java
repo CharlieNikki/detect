@@ -14,16 +14,23 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class CheckInSheet {
+public class AttendanceInfo {
 
-    @ApiModelProperty(value = "签到编号id")
+    @ApiModelProperty(value = "唯一标识")
     private String id;
+
     @ApiModelProperty(value = "用户id")
     private String userId;
+
     @ApiModelProperty(value = "最近一次签到日期")
-    private String checkInDate;
+    private String date;
+
     @ApiModelProperty("打卡经度")
     private BigDecimal longitude;
+
     @ApiModelProperty("打卡纬度")
     private BigDecimal latitude;
+
+    @ApiModelProperty("签到位置")
+    private String location;
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.detect.mapper.DetectAttendanceMapper">
+
+    <update id="updateDateByUserId" parameterType="com.example.detect.entity.AttendanceInfo">
+        update
+            detect_attendance_sheet
+        set
+            date = #{date}, longitude = #{longitude}, latitude = #{latitude}
+        where
+            user_id = #{userId}
+    </update>
+
+    <insert id="insertInfo" parameterType="com.example.detect.entity.AttendanceInfo">
+        insert into
+            detect_attendance_sheet(user_id, date, longitude, latitude)
+        values
+            (#{userId}, #{date}, #{longitude}, #{latitude})
+    </insert>
+
+    <select id="selectInfoByUserId" resultType="com.example.detect.entity.AttendanceInfo">
+        select
+            id, user_id as userId, date, longitude, latitude
+        from
+            detect_attendance_sheet
+        where
+            user_id = #{userId}
+    </select>
+
+</mapper>
