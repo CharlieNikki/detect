@@ -12,7 +12,7 @@ spring:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost:8080/demo
     username: root
-    password: 123123
+    password: 12312311
     type: com.alibaba.druid.pool.DruidDataSource #当前数据源操作类型
     druid:
       aop-patterns: com.example.detect.entity.* #监控springbean

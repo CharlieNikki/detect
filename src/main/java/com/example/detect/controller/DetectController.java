@@ -12,6 +12,7 @@ import com.example.detect.utils.*;
 import io.swagger.annotations.*;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,7 +39,7 @@ public class DetectController {
     @Resource
     private DetectRecordService service;
 
-    @Resource
+    @Autowired
     private DetectRequestService requestService;
 
     @SneakyThrows
@@ -182,14 +183,17 @@ public class DetectController {
 
     /**
      * 根据data_status返回工程信息
+     *      待检测
+     *      检测中
+     *      已完成
      */
     @GetMapping("/getRequestInfoByStatus")
     @ApiOperation("根据条件获取工程信息接口")
     @ResponseBody
-    public Result getRequestInfoByStatus(@RequestParam("dataStatus") Integer dataStatus) {
+    public Result getRequestInfoByStatus(Integer dataStatus) {
 
         Result result = new Result();
-        List<DetectRequest> detectRequests = null;
+        List<DetectRequest> detectRequests = new ArrayList<>();
         try {
             detectRequests = requestService.selectDetectRequestByStatus(dataStatus);
         } catch (Exception e) {
@@ -198,7 +202,7 @@ public class DetectController {
         if (detectRequests.size() != 0) {
             result.setResult(RETURN_CODE_SUCCESS, RETURN_MESSAGE_SUCCESS, detectRequests, detectRequests.size());
         } else {
-            result.setResult(RETURN_CODE_FAIL, "没有对应的信息", null, 0);
+            result.setResult(RETURN_CODE_FAIL, "没有对应的信息", null, detectRequests.size());
         }
         return result;
     }

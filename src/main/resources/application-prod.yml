@@ -9,11 +9,11 @@ spring:
     pathmatch:
       matching-strategy: ant_path_matcher
   datasource:
-    driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost:8080/demo
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://8.136.84.248:3306/wh_road_bridge?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true
     username: root
     password: Cph1996@
-    type: com.alibaba.druid.pool.DruidDataSource #当前数据源操作类型
     druid:
       aop-patterns: com.example.detect.entity.* #监控springbean
       filters: stat, wall #底层开启功能，stat(sql监控)，wall(防火墙)

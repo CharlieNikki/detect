@@ -7,7 +7,7 @@
     <!--用户注册-->
     <insert id="saveInfo" parameterType="com.example.detect.entity.User">
         insert into
-            user(user_id, username, password, company_name, phone, user_type)
+            detect_user(user_id, username, password, company_name, phone, user_type)
         values
             (#{userId}, #{username}, #{password}, #{companyName}, #{phone}, #{userType})
     </insert>
@@ -17,7 +17,7 @@
         select
             username, company_name as companyName, phone, password, user_type as userType
         from
-            user
+            detect_user
         where
             user_id = #{id}
     </select>
@@ -27,7 +27,7 @@
         select
             username, user_id as userId, phone, company_name as companyName, user_type as userType
         from
-            user
+            detect_user
         where
             phone = #{phone} and password = #{password}
     </select>
@@ -36,14 +36,14 @@
         select
             username, user_id as userId, password, phone, company_name as companyName, user_type as userType
         from
-            user
+            detect_user
         where
             phone = #{phone}
     </select>
     
     <update id="updateUserInfo" parameterType="com.example.detect.entity.User">
         update
-            user
+            detect_user
         set
             username = #{username}, company_name = #{companyName}, password = #{password}
         where

@@ -5,10 +5,10 @@
 <mapper namespace="com.example.detect.mapper.DetectRequestMapper">
 
     <!--根据status，获取project信息-->
-    <select id="selectDetectRequestByStatus" parameterType="int" resultType="com.example.detect.entity.DetectRequest">
+    <select id="selectDetectRequestByStatus" resultType="com.example.detect.entity.DetectRequest">
         select
             project_name as projectName, project_company as projectCompany,
-            location, id, detect_date as detectRequestDate, data_status as dataStatus, longitude, latitude
+            id, detect_date as detectRequestDate, data_status as dataStatus, longitude, latitude
         from
             detect_request
         where

@@ -17,7 +17,7 @@ public interface DetectRequestMapper {
     /**
      * 根据projectId,进行完成检测操作
      */
-    @Update("update detect_request set data_status = 3 where id = #{projectId}")
+    @Update("update detect_request set data_status = 2 where id = #{projectId}")
     int updateStatusToComplete(String projectId);
 
     @Select("select data_status from detect_request where id = #{projectId}")

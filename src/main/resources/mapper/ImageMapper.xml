@@ -6,14 +6,14 @@
 
     <insert id="insertImage" parameterType="com.example.detect.entity.Image">
         insert into
-            image(id, project_id, image_name, date)
+            detect_image(id, project_id, image_name, date)
         values
             (#{id}, #{projectId}, #{imageName}, #{date})
     </insert>
 
     <delete id="deleteImageById">
         delete from
-            image
+            detect_image
         where
             id = #{id}
     </delete>
@@ -22,7 +22,7 @@
         select
             id, image_name as imageName
         from
-            image
+            detect_image
         where
             project_id = #{projectId}
     </select>
@@ -31,7 +31,7 @@
         select
             id, project_id as projectId, image_name as imageName, date
         from
-            image
+            detect_image
         where
             id = #{id}
     </select>

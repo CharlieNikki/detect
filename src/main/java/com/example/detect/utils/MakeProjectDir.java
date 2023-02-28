@@ -1,6 +1,4 @@
 package com.example.detect.utils;
-
-import com.mysql.jdbc.StringUtils;
 import lombok.SneakyThrows;
 
 import java.io.IOException;
