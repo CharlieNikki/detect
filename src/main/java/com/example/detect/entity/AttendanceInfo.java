@@ -33,4 +33,7 @@ public class AttendanceInfo {
 
     @ApiModelProperty("签到位置")
     private String location;
+
+    @ApiModelProperty("用户名")
+    private String username;
 }

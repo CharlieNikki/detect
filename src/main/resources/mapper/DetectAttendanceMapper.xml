@@ -8,21 +8,23 @@
         update
             detect_attendance_sheet
         set
-            date = #{date}, longitude = #{longitude}, latitude = #{latitude}
+            date = #{date}, longitude = #{longitude},
+            latitude = #{latitude}, username = #{username},
+            location = #{location}
         where
             user_id = #{userId}
     </update>
 
     <insert id="insertInfo" parameterType="com.example.detect.entity.AttendanceInfo">
         insert into
-            detect_attendance_sheet(user_id, date, longitude, latitude)
+            detect_attendance_sheet(user_id, date, longitude, latitude, username)
         values
-            (#{userId}, #{date}, #{longitude}, #{latitude})
+            (#{userId}, #{date}, #{longitude}, #{latitude}, #{username}, #{location})
     </insert>
 
     <select id="selectInfoByUserId" resultType="com.example.detect.entity.AttendanceInfo">
         select
-            id, user_id as userId, date, longitude, latitude
+            id, user_id as userId, date, longitude, latitude, username, location
         from
             detect_attendance_sheet
         where

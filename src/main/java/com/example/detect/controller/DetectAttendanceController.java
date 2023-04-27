@@ -17,6 +17,11 @@ public class DetectAttendanceController {
     @Autowired
     private AttendanceService service;
 
+    /**
+     * 签到考勤
+     * @param info
+     * @return
+     */
     @PostMapping("/check")
     @ResponseBody
     public Result check(AttendanceInfo info) {
@@ -24,6 +29,7 @@ public class DetectAttendanceController {
         Result result = new Result();
         info.setDate(DateUtil.dateFormat());
         boolean flag = false;
+        System.out.println(info);
         try {
             flag = service.detectAttendance(info);
         } catch (Exception e) {
